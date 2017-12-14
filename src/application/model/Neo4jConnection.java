@@ -43,18 +43,15 @@ public class Neo4jConnection implements Runnable{
 		DBpath = new File(path);
 	}
 	
-	public void shutdownConnection() {
-		try {
-			graphDb.shutdown();
-			graphDb = null;
-			driver.close();
-			isConnected = false;
-		}catch(Exception z) {
-		}
+	private void shutdownConnection() throws Exception {
+		graphDb.shutdown();
+		graphDb = null;
+		driver.close();
+		isConnected = false;
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void startConnection() throws Exception {
+	private void startConnection() throws Exception {
 		if(DatabaseCheck.exists() && DBpath.exists()) {
 
 			GraphDatabaseSettings.BoltConnector bolt = GraphDatabaseSettings.boltConnector( "0" );		
@@ -70,12 +67,7 @@ public class Neo4jConnection implements Runnable{
 			
 			String uri = "bolt://127.0.0.1:7688";
 			driver = GraphDatabase.driver(uri, AuthTokens.basic("neo4j","neo4jadmin"));
-			
-	//		Platform.runLater(new Runnable() {
-	//            @Override public void run() {
-	//            	ConStage.close();
-	//            }
-	//        });
+
 			isConnected = true;
 		}
 		else if(!DBpath.exists()) {
@@ -92,7 +84,7 @@ public class Neo4jConnection implements Runnable{
 					    Scene QuestionScene = new Scene(fxmlLoader.load(), 300, 150);
 					    Stage QuestionStage = new Stage();
 					    
-					    QuestionScene.getStylesheets().add("/application/Custom.css");					   
+					    QuestionScene.getStylesheets().add("/application/Resource/Custom.css");
 					    QuestionStage.initStyle(StageStyle.TRANSPARENT);
 					    QuestionStage.setScene(QuestionScene);
 					    QuestionStage.show();					 
@@ -107,7 +99,11 @@ public class Neo4jConnection implements Runnable{
 	
 	public void run(){
 		if(isConnected()) {
-			shutdownConnection();
+			try {
+				shutdownConnection();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		else {
 			try {
@@ -135,11 +131,6 @@ public class Neo4jConnection implements Runnable{
 	}
 	
 	private static void registerShutdownHook( final GraphDatabaseService graphDb ){
-	    Runtime.getRuntime().addShutdownHook( new Thread(){
-	        @Override
-	        public void run(){
-	            graphDb.shutdown();
-	        }
-	    });
+	    Runtime.getRuntime().addShutdownHook(new Thread(graphDb::shutdown));
 	}
 }
