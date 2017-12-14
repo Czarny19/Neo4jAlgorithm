@@ -1,4 +1,4 @@
-package application.Controller;
+package application.controller;
 
 import application.model.Algorithm_A_star;
 import application.model.Neo4jConnection;

@@ -84,7 +84,7 @@ public class Neo4jConnection implements Runnable{
 					    Scene QuestionScene = new Scene(fxmlLoader.load(), 300, 150);
 					    Stage QuestionStage = new Stage();
 					    
-					    QuestionScene.getStylesheets().add("/application/Resource/Custom.css");
+					    QuestionScene.getStylesheets().add("/application/resource/Custom.css");
 					    QuestionStage.initStyle(StageStyle.TRANSPARENT);
 					    QuestionStage.setScene(QuestionScene);
 					    QuestionStage.show();					 
