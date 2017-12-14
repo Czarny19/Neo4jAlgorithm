@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<Pane fx:id="QuestionPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.NewDbQuestionBoxController">
+   <children>
+      <Button fx:id="YesButton" layoutX="18.0" layoutY="94.0" mnemonicParsing="false" onAction="#YesButtonAction" prefHeight="25.0" prefWidth="101.0" text="Tak" />
+      <Button fx:id="NoButton" layoutX="181.0" layoutY="94.0" mnemonicParsing="false" onAction="#NoButtonAction" prefHeight="25.0" prefWidth="101.0" text="Nie" />
+      <TextArea fx:id="InfoBox" layoutX="18.0" layoutY="14.0" prefHeight="63.0" prefWidth="264.0" text="Nie wykryto bazy danych w wybranym folderze, czy chcesz stworzyć nową bazę danych w podanej lokalizacji?" wrapText="true">
+         <font>
+            <Font name="Arial" size="13.0" />
+         </font></TextArea>
+   </children>
+</Pane>

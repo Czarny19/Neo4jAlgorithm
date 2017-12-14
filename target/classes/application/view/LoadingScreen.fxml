@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Rectangle2D?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.effect.Blend?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+
+<Pane fx:id="LoadingPane" accessibleRole="IMAGE_VIEW" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="310.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TextArea fx:id="SubjectTextArea" editable="false" focusTraversable="false" layoutX="132.0" layoutY="10.0" prefHeight="78.0" prefWidth="166.0" style="-fx-background-color: #ffffff;" text="Projekt i implementacja systemu sieciowego wspomagania analiz powiązań i zależności." wrapText="true">
+         <cursor>
+            <Cursor fx:constant="NONE" />
+         </cursor></TextArea>
+      <TextArea fx:id="CreatedByTextArea" editable="false" focusTraversable="false" layoutX="132.0" layoutY="85.0" prefHeight="54.0" prefWidth="166.0" style="-fx-background-color: #ffffff;" text="Łukasz Czarny" wrapText="true" />
+      <ImageView fitHeight="130.0" fitWidth="122.0" layoutX="10.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
+      	<image>
+            <Image url="@../../WAT-logo.jpg" />
+        </image>
+         <viewport>
+            <Rectangle2D />
+         </viewport>
+      </ImageView>
+   </children>
+   <cursor>
+      <Cursor fx:constant="DISAPPEAR" />
+   </cursor>
+   <effect>
+      <Blend mode="GREEN" />
+   </effect>
+</Pane>
