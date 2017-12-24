@@ -1,31 +1,38 @@
 package application.controller;
 
+import application.model.A_star_Thread;
 import application.model.Algorithm_A_star;
+import application.model.GraphAStar;
 import application.model.Neo4jConnection;
 import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.DirectoryChooser;
 import javafx.util.Duration;
+import org.neo4j.driver.v1.Record;
 
 import java.io.File;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class MenuController implements Initializable{
 
 	@FXML
+	private TextField AlgorithmTextField;
+	@FXML
 	private Button BaseConnectionButton;
 	@FXML
 	private Button BaseDisconnectButton;
+	@FXML
+	private Button StartButton;
 	@FXML
 	private ChoiceBox<String> AlgorithmChooser;
 	@FXML
@@ -37,7 +44,11 @@ public class MenuController implements Initializable{
 	@FXML
 	private TextField AlgorithmStatusText;
 	@FXML
-	public TextField PathTextField;
+	private TextField PathTextField;
+	@FXML
+	private TextField StartNodeTF;
+	@FXML
+	private TextField EndNodeTF;
 
 	private int ConnectionStatusStage;
 	
@@ -54,6 +65,11 @@ public class MenuController implements Initializable{
 		AlgorithmStatusBar.setVisible(false);
 		AlgorithmStatusText.setVisible(false);
 		BaseDisconnectButton.setVisible(false);
+		StartNodeTF.setVisible(false);
+		EndNodeTF.setVisible(false);
+		StartButton.setVisible(false);
+		AlgorithmTextField.setVisible(false);
+		AlgorithmChooser.setVisible(false);
 		
 		PathTextField.setText("");
 		
@@ -156,6 +172,8 @@ public class MenuController implements Initializable{
 				ConnectionStatusStage = 5;
 
 				BaseDisconnectButton.setVisible(true);
+				AlgorithmChooser.setVisible(true);
+				AlgorithmTextField.setVisible(true);
 			}
         });
 		StatusDelay.play();
@@ -204,24 +222,106 @@ public class MenuController implements Initializable{
 				ConnectionStatusStage = 0;	
 			}
         });
-		StatusDelay.play();		
+		StatusDelay.play();
+		AlgorithmChooser.setVisible(false);
+		AlgorithmTextField.setVisible(false);
 	}
-	
+
+	@FXML
+	private void AlgorithmChooserAction(){
+		AlgorithmChooser.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			if(!Objects.equals(newValue, "")){
+				StartButton.setVisible(true);
+			}
+			else{
+				StartButton.setVisible(false);
+			}
+
+			if(Objects.equals(newValue, "A*")){
+			   StartNodeTF.setVisible(true);
+			   EndNodeTF.setVisible(true);
+
+			}
+			else {
+			   StartNodeTF.setVisible(false);
+			   EndNodeTF.setVisible(false);
+			}
+        });
+	}
+
 	@FXML
 	private void StartAction() {
-		
+
 		switch (AlgorithmChooser.getSelectionModel().getSelectedItem()) {
-        	case "A*":  	Algorithm_A_star A_star = new Algorithm_A_star(N4jC.getDriver());
-							Thread Start_A_star = new Thread(A_star); 
-							Start_A_star.start();
+
+        	case "A*":  	Alg_A_Star();
 							break;
-					
+
         	case "test":  	System.out.println("test");
         					break;
-		}		
+		}
 	}
 
 	private void setN4jC(Neo4jConnection n4jC) {
 		N4jC = n4jC;
+	}
+
+	private void Alg_A_Star(){
+		if(StartNodeTF.getText().matches("[0-9]+") && EndNodeTF.getText().matches("[0-9]+")) {
+			Map<String, Map<String, Double>> heuristic = new HashMap<>();
+			GraphAStar<String> graph = new GraphAStar<>(heuristic);
+			Algorithm_A_star<String> A_star = new Algorithm_A_star<>(N4jC.getDriver(), graph);
+			A_star_Thread A_star_thread = new A_star_Thread(A_star.getNodesList(), A_star.getRelationsList(), heuristic,
+					graph, A_star);
+			A_star_thread.setRoute(StartNodeTF.getText(),EndNodeTF.getText());
+
+			Boolean startExists = false;
+			Boolean endExists = false;
+
+			for ( Record node : A_star.getNodesList() ){
+				if(StartNodeTF.getText().equals(node.get(0).toString()))
+					startExists = true;
+				if(EndNodeTF.getText().equals(node.get(0).toString()))
+					endExists = true;
+			}
+
+			if(startExists && endExists){
+				Thread Start_A_star = new Thread(A_star_thread);
+				Start_A_star.start();
+			}
+			if(!startExists && !endExists){
+				Alert alert = new Alert(Alert.AlertType.INFORMATION);
+				alert.setTitle("Błąd!");
+				alert.setHeaderText(null);
+				alert.setContentText("Podane wartości węzła początkowego oraz końcowego nie występują w bazie.");
+
+				alert.showAndWait();
+			}
+			else if(!startExists){
+				Alert alert = new Alert(Alert.AlertType.INFORMATION);
+				alert.setTitle("Błąd!");
+				alert.setHeaderText(null);
+				alert.setContentText("Podana wartość węzła początkowego nie występuje w bazie.");
+
+				alert.showAndWait();
+			}
+			else if(!endExists){
+				Alert alert = new Alert(Alert.AlertType.INFORMATION);
+				alert.setTitle("Błąd!");
+				alert.setHeaderText(null);
+				alert.setContentText("Podana wartość węzła końcowego nie występuje w bazie.");
+
+				alert.showAndWait();
+			}
+		}
+		else {
+			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			alert.setTitle("Błąd!");
+			alert.setHeaderText(null);
+			alert.setContentText("Należy wprowadzić poprawne wartości węzła początkowego i końcowego " +
+					"(Wartości muszą być liczbami całkowitymi).");
+
+			alert.showAndWait();
+		}
 	}
 }

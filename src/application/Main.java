@@ -23,7 +23,7 @@ public class Main extends Application {
     public void start(Stage MainStage) throws Exception {   
     	
         final FXMLLoader loaderLoadingScreen = new FXMLLoader(getClass().getResource("view/LoadingScreen.fxml"));
-        final FXMLLoader loaderMenu = new FXMLLoader(getClass().getResource("view/Menu2.fxml"));
+        final FXMLLoader loaderMenu = new FXMLLoader(getClass().getResource("view/Menu.fxml"));
 
         Parent root = loaderLoadingScreen.load();
         Scene loadingScene = new Scene(root);
