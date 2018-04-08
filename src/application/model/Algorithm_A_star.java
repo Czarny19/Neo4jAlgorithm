@@ -11,16 +11,26 @@ public class Algorithm_A_star<T>{
 
 	private Driver driver;
     private GraphAStar<T> graph;
+    private static int StartId;
+    private static int EndId;
 	
-	public Algorithm_A_star(Driver driver, GraphAStar<T> graph) {
+	public Algorithm_A_star(Driver driver, GraphAStar<T> graph, int StartId, int EndId) {
 
 		this.driver = driver;
 		this.graph = graph;
+		Algorithm_A_star.StartId = StartId;
+		Algorithm_A_star.EndId = EndId;
 	}
 
     public class NodeComparator implements Comparator<NodeData<T>> {
         public int compare(NodeData<T> nodeFirst, NodeData<T> nodeSecond) {
             return Double.compare(nodeFirst.getF(), nodeSecond.getF());
+        }
+    }
+
+    public Record getGraphSize(){
+        try ( Session session = driver.session() ) {
+            return session.readTransaction(Algorithm_A_star::getSize);
         }
     }
 
@@ -79,7 +89,6 @@ public class Algorithm_A_star<T>{
         return null;
     }
 
-
     private List<T> path(Map<T, T> path, T destination) {
         assert path != null;
         assert destination != null;
@@ -93,13 +102,68 @@ public class Algorithm_A_star<T>{
         Collections.reverse(pathList);
         return pathList;
     }
-    //Zmienić pobieranie dla dużej bazy tak żeby dało się wykonać
-    private static List<Record> getRelations(Transaction tx )
+
+    private static List<Record> getRelations(Transaction tx)
     {
-        return tx.run( "MATCH p=()-->() RETURN p LIMIT 2000" ).list();
+        List<Record> result;
+        List<Record> finalResult;
+        int index = 1;
+        int prevSize = 0;
+
+        String matchExpand = "(n0)-[r0]->(n)-[r]->(p)";
+
+        finalResult = tx.run("MATCH (n)-[r]->(p) WHERE ID(n)="
+                + StartId + " RETURN distinct ID(n),ID(r),ID(p)").list();
+
+        while (finalResult.size() != prevSize){
+            prevSize = finalResult.size();
+
+            result = tx.run("MATCH" + matchExpand + " WHERE ID(n0)="
+                    + StartId + " RETURN distinct ID(n),ID(r),ID(p)").list();
+
+            for (Record aResult1 : result) {
+                if (!finalResult.contains(aResult1)) {
+                    finalResult.add(aResult1);
+                }
+            }
+
+            matchExpand = matchExpand.substring(0,matchExpand.length()-12);
+            matchExpand += "(p" + index + ")-[r" + index + "]->(n)-[r]->(p)";
+            index++;
+        }
+
+        return finalResult;
     }
 
     private static List<Record> getNodes(Transaction tx){
-        return tx.run( "MATCH (n) RETURN ID(n) LIMIT 2000" ).list();
+        List<Record> result;
+        List<Record> finalResult;
+
+        int prevSize = 0;
+        String matchExpand = "-[]->(n)";
+        int index = 1;
+        finalResult = tx.run("MATCH (n) WHERE ID(n)=" + StartId + " RETURN ID(n)").list();
+        finalResult.add(tx.run("MATCH (n) WHERE ID(n)=" + EndId + " RETURN ID(n)").list().get(0));
+        while(finalResult.size() != prevSize) {
+            prevSize = finalResult.size();
+
+            result = tx.run("MATCH (a0)" + matchExpand + "WHERE ID(a0)=" + StartId +
+                    " RETURN distinct ID(n)").list();
+
+            for (Record aResult1 : result) {
+                if (!finalResult.contains(aResult1)) {
+                    finalResult.add(aResult1);
+
+                }
+            }
+            index++;
+            matchExpand = matchExpand.substring(0, matchExpand.length() - 8);
+            matchExpand += "-[]->(a" + index + ")" + "-[]->(n)";
+        }
+        return finalResult;
+    }
+
+    private static Record getSize(Transaction tx){
+        return tx.run("start n=node(*) match (n) return count(n)").list().get(0);
     }
 }

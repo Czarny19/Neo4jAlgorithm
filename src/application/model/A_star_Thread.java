@@ -33,7 +33,6 @@ public class A_star_Thread implements Runnable{
 
     @Override
     public void run() {
-        System.out.println("krok0");
         for ( final Record node : nodes ) {
             Map<String, Double> map = new HashMap<>();
             for ( final Record node_2 : nodes ) {
@@ -45,13 +44,12 @@ public class A_star_Thread implements Runnable{
             }
             heuristic.put(node.get(0).toString(),map);
         }
-        System.out.println("krok1");
         for ( final Record node : nodes ) {
             graph.addNode((node.get(0) + ""));
         }
         for ( final Record relation : relations ) {
-            String from = relation.get(0).asPath().start().id() + "";
-            String to = relation.get(0).asPath().end().id() + "";
+            String from = relation.get(0) + "";
+            String to = relation.get(2) + "";
             graph.addEdge(from,to);
         }
         try {

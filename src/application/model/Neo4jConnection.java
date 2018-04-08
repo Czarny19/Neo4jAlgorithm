@@ -2,12 +2,11 @@ package application.model;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.neo4j.driver.v1.AuthTokens;
-import org.neo4j.driver.v1.Driver;
-import org.neo4j.driver.v1.GraphDatabase;
+import org.neo4j.driver.v1.*;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.factory.GraphDatabaseSettings;
@@ -54,19 +53,23 @@ public class Neo4jConnection implements Runnable{
 	private void startConnection() throws Exception {
 		if(DatabaseCheck.exists() && DBpath.exists()) {
 
-			GraphDatabaseSettings.BoltConnector bolt = GraphDatabaseSettings.boltConnector( "0" );		
-			
+			GraphDatabaseSettings.BoltConnector bolt = GraphDatabaseSettings.boltConnector("0");
+
 			graphDb = new GraphDatabaseFactory()
-			        .newEmbeddedDatabaseBuilder( DBpath )
-			        .setConfig( bolt.type, "BOLT" )
-			        .setConfig( bolt.enabled, "true" )
-			        .setConfig( bolt.address, ":7688" )
-			        .newGraphDatabase();
-			
+					.newEmbeddedDatabaseBuilder(DBpath)
+					.setConfig(bolt.type, "BOLT")
+					.setConfig(bolt.enabled, "true")
+					.setConfig(bolt.address, ":7688")
+					.newGraphDatabase();
+
 			registerShutdownHook(graphDb);
-			
+
 			String uri = "bolt://127.0.0.1:7688";
-			driver = GraphDatabase.driver(uri, AuthTokens.basic("neo4j","neo4jadmin"));
+			driver = GraphDatabase.driver(uri, AuthTokens.basic("neo4j", "neo4jadmin"));
+
+			try (Session session = driver.session()) {
+				session.beginTransaction().run("MATCH (n) RETURN n LIMIT 1");
+			}
 
 			isConnected = true;
 		}

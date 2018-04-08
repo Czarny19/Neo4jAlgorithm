@@ -225,6 +225,9 @@ public class MenuController implements Initializable{
 		StatusDelay.play();
 		AlgorithmChooser.setVisible(false);
 		AlgorithmTextField.setVisible(false);
+		StartButton.setVisible(false);
+		StartNodeTF.setVisible(false);
+		EndNodeTF.setVisible(false);
 	}
 
 	@FXML
@@ -270,7 +273,10 @@ public class MenuController implements Initializable{
 		if(StartNodeTF.getText().matches("[0-9]+") && EndNodeTF.getText().matches("[0-9]+")) {
 			Map<String, Map<String, Double>> heuristic = new HashMap<>();
 			GraphAStar<String> graph = new GraphAStar<>(heuristic);
-			Algorithm_A_star<String> A_star = new Algorithm_A_star<>(N4jC.getDriver(), graph);
+			Algorithm_A_star<String> A_star =
+                    new Algorithm_A_star<>(N4jC.getDriver(), graph, Integer.parseInt(StartNodeTF.getText()), Integer.parseInt(EndNodeTF.getText()));
+			///test wielkości bazy
+			System.out.println(A_star.getGraphSize());
 			A_star_Thread A_star_thread = new A_star_Thread(A_star.getNodesList(), A_star.getRelationsList(), heuristic,
 					graph, A_star);
 			A_star_thread.setRoute(StartNodeTF.getText(),EndNodeTF.getText());

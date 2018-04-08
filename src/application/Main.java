@@ -20,8 +20,8 @@ public class Main extends Application {
 	private Stage LoadingStage;
 
     @Override
-    public void start(Stage MainStage) throws Exception {   
-    	
+    public void start(Stage MainStage) throws Exception {
+
         final FXMLLoader loaderLoadingScreen = new FXMLLoader(getClass().getResource("view/LoadingScreen.fxml"));
         final FXMLLoader loaderMenu = new FXMLLoader(getClass().getResource("view/Menu.fxml"));
 
