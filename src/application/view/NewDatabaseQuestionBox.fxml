@@ -5,12 +5,12 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane fx:id="QuestionPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+<Pane fx:id="NewDBQuestion" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
       prefHeight="150.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="application.controller.NewDbQuestionBoxController">
-   <Button layoutX="18.0" layoutY="94.0" mnemonicParsing="false" onAction="#YesButtonAction"
+   <Button layoutX="18.0" layoutY="94.0" mnemonicParsing="false" onAction="#yesButtonAction"
            prefHeight="25.0" prefWidth="101.0" text="Tak"/>
-   <Button layoutX="181.0" layoutY="94.0" mnemonicParsing="false" onAction="#NoButtonAction"
+   <Button layoutX="181.0" layoutY="94.0" mnemonicParsing="false" onAction="#noButtonAction"
            prefHeight="25.0" prefWidth="101.0" text="Nie"/>
    <TextArea fx:id="InfoBox" layoutX="18.0" layoutY="14.0" prefHeight="63.0" prefWidth="264.0"
              text="Nie wykryto bazy danych w wybranym folderze, czy chcesz stworzyć nową bazę danych w podanej lokalizacji?"

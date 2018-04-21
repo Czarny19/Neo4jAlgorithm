@@ -1,6 +1,6 @@
 package application;
 
-import application.controller.MenuController;
+import application.controller.Menu;
 import application.model.Neo4jConnection;
 import javafx.animation.PauseTransition;
 import javafx.application.Application;
@@ -12,44 +12,42 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
-
 public class Main extends Application {
 	
-	private PauseTransition delayLoading = new PauseTransition(Duration.seconds(1));
-	
-	private Stage LoadingStage;
+	private PauseTransition delay = new PauseTransition(Duration.seconds(1));	
+	private Stage Loading;
 
     @Override
     public void start(Stage MainStage) throws Exception {
 
-        final FXMLLoader loaderLoadingScreen = new FXMLLoader(getClass().getResource("view/LoadingScreen.fxml"));
-        final FXMLLoader loaderMenu = new FXMLLoader(getClass().getResource("view/Menu.fxml"));
+        final FXMLLoader LoadingScreen = new FXMLLoader(getClass().getResource("view/LoadingScreen.fxml"));
+        final FXMLLoader Menu = new FXMLLoader(getClass().getResource("view/Menu.fxml"));
 
-        Parent root = loaderLoadingScreen.load();
-        Scene loadingScene = new Scene(root);
-        loadingScene.getStylesheets().add("/application/resource/Custom.css");
+        Parent root = LoadingScreen.load();
+        Scene loading = new Scene(root);
+        loading.getStylesheets().add("/application/resource/Custom.css");
                 
-        LoadingStage = new Stage();
-        LoadingStage.initStyle(StageStyle.TRANSPARENT);
-        LoadingStage.setScene(loadingScene);       
-        LoadingStage.show();
+        Loading = new Stage();
+        Loading.initStyle(StageStyle.TRANSPARENT);
+        Loading.setScene(loading);       
+        Loading.show();
     	
-    	root = loaderMenu.load();
+    	root = Menu.load();
     	
     	MainStage.setTitle("Neo4j Algorithm");
     	MainStage.getIcons().add(new Image("application/resource/Icon.png"));
     	MainStage.setScene(new Scene(root));
     	
-    	Neo4jConnection N4jC = new Neo4jConnection();
+    	Neo4jConnection Neo4jConnection = new Neo4jConnection();
     	
-    	MenuController MenuCtr = new MenuController();
-    	MenuCtr.initData(N4jC);
+    	Menu MenuCtr = new Menu();
+    	MenuCtr.initData(Neo4jConnection);
     	  	
-        delayLoading.setOnFinished(event -> {
-        	LoadingStage.hide();
+        delay.setOnFinished(event -> {
+        	Loading.hide();
         	MainStage.show();
         });
-        delayLoading.play();        
+        delay.play();        
     }
       
 	public static void main(String[] args) {

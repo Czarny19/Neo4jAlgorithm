@@ -20,7 +20,7 @@ import javafx.stage.Stage;
 public class NewDbQuestionBoxController implements Initializable{
 	
 	@FXML
-	private Pane QuestionPane;
+	private Pane NewDBQuestion;
 	@FXML
 	private TextArea InfoBox;
 	
@@ -28,38 +28,40 @@ public class NewDbQuestionBoxController implements Initializable{
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		QuestionPane.setBorder(new Border(new BorderStroke(Color.BLACK, 
-	            BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+		NewDBQuestion.setBorder(new Border(new BorderStroke(
+				Color.BLACK, 
+	            BorderStrokeStyle.SOLID, 
+	            CornerRadii.EMPTY, 
+	            BorderWidths.DEFAULT)));
 		
 		InfoBox.setEditable(false);
-		InfoBox.setFocusTraversable(false);
-		
+		InfoBox.setFocusTraversable(false);		
 		Answer = 0;
 	}
 	
 	@FXML
-	private void YesButtonAction(ActionEvent event) {
-		final Node source = (Node) event.getSource();
-	    final Stage stage = (Stage) source.getScene().getWindow();
-	    stage.close();
-	    
+	private void yesButtonAction(ActionEvent event) {
+		buttonAction(event);
 		Answer = 1;
 	}
 	
 	@FXML
-	private void NoButtonAction(ActionEvent event) {
-		final Node source = (Node) event.getSource();
-	    final Stage stage = (Stage) source.getScene().getWindow();
-	    stage.close();
-	    
+	private void noButtonAction(ActionEvent event) {
+		buttonAction(event);
 	    Answer = 2;
 	}
 	
-	int getAnswer() {
+	private void buttonAction(ActionEvent event) {
+		final Node source = (Node) event.getSource();
+	    final Stage stage = (Stage) source.getScene().getWindow();
+	    stage.close();
+	}
+	
+	int answer() {
 		return Answer;
 	}
 
-	void setAnswer() {
+	void resetAnswer() {
 		Answer = 0;
 	}
 

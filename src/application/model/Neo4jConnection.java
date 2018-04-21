@@ -2,7 +2,6 @@ package application.model;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,10 +26,6 @@ public class Neo4jConnection implements Runnable{
 	
 	private Boolean isConnected = false;
 	private Boolean ConnectionErr = false;
-
-	public Neo4jConnection() {
-	
-	}	
 	
 	public void initPath(String path) {
 		DBpath = new File(path);
@@ -40,13 +35,6 @@ public class Neo4jConnection implements Runnable{
 	public void initNewPath(String path) {
 		DatabaseCheck = new File(path);
 		DBpath = new File(path);
-	}
-	
-	private void shutdownConnection() throws Exception {
-		graphDb.shutdown();
-		graphDb = null;
-		driver.close();
-		isConnected = false;
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -73,10 +61,10 @@ public class Neo4jConnection implements Runnable{
 
 			isConnected = true;
 		}
-		else if(!DBpath.exists()) {
+		if(!DBpath.exists()) {
 			ConnectionErr = true;
 		}
-		else{
+		if(!DatabaseCheck.exists() && DBpath.exists()){
 			Platform.runLater(new Runnable(){
 				@Override
 				public void run() {
@@ -100,21 +88,22 @@ public class Neo4jConnection implements Runnable{
 		}
 	}
 	
-	public void run(){
-		if(isConnected()) {
-			try {
-				shutdownConnection();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		else {
-			try {
+	private void shutdownConnection() throws Exception {
+		graphDb.shutdown();
+		graphDb = null;
+		driver.close();
+		isConnected = false;
+	}
+	
+	public void run(){	
+		try {
+			if(!isConnected())
 				startConnection();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+			else if(isConnected())
+				shutdownConnection();		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
 	}
 	
 	public boolean isConnected() {
