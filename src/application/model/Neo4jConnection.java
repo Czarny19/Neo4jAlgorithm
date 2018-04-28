@@ -50,7 +50,7 @@ public class Neo4jConnection implements Runnable{
 					.setConfig(bolt.address, ":7688")
 					.newGraphDatabase();
 
-			registerShutdownHook(graphDb);
+			//registerShutdownHook(graphDb);
 
 			String uri = "bolt://127.0.0.1:7688";
 			driver = GraphDatabase.driver(uri, AuthTokens.basic("neo4j", "neo4jadmin"));
