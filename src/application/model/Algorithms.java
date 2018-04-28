@@ -9,7 +9,7 @@ import org.neo4j.driver.v1.Record;
 import application.model.astar.AStar;
 import application.model.astar.AStarThread;
 import application.model.astar.GraphAStar;
-import application.model.betweenness.BetweennessCentralityThread;
+import application.model.betweenness.BCDirectedThread;
 import javafx.scene.control.Alert;
 
 /// B³¹d przy wpisywaniu z³ego startu i koñca !!!!
@@ -93,7 +93,7 @@ public class Algorithms {
 	}
 	
 	public void betweennessCentrality(Driver Neo4jDriver) {
-		BetweennessCentralityThread BCThread = new BetweennessCentralityThread(Neo4jDriver);
-		BCThread.start();
+		BCDirectedThread BCDirectedThread = new BCDirectedThread(Neo4jDriver);
+		BCDirectedThread.start();
 	}
 }
