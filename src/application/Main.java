@@ -37,6 +37,11 @@ public class Main extends Application {
     	MainStage.setTitle("Neo4j Algorithm");
     	MainStage.getIcons().add(new Image("application/resource/Icon.png"));
     	MainStage.setScene(new Scene(root));
+    	MainStage.initStyle(StageStyle.UNIFIED);
+    	MainStage.maximizedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue)
+                MainStage.setMaximized(false);
+        });
     	
     	Neo4jConnection Neo4jConnection = new Neo4jConnection();
     	

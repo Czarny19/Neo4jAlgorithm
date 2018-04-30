@@ -9,7 +9,8 @@ public class Node {
 	private double sigma;
 	private double delta;
 	private double distance;
-	private  HashSet<Node> predecessors;
+	private HashSet<Node> predecessors;
+	private HashSet<Node> successors;
 	
 	public Node(long ID) {
 		this.ID = ID;
@@ -57,5 +58,13 @@ public class Node {
 
 	public void setPredecessors(HashSet<Node> predecessors) {
 		this.predecessors = predecessors;
+	}
+
+	public HashSet<Node> successors() {
+		return successors;
+	}
+
+	public void setSuccessors(HashSet<Node> succesors) {
+		this.successors = succesors;
 	}
 }

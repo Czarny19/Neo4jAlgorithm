@@ -24,7 +24,7 @@ public class NewDbQuestionBoxController implements Initializable{
 	@FXML
 	private TextArea InfoBox;
 	
-	private static int Answer;
+	private static int answer;
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -36,19 +36,19 @@ public class NewDbQuestionBoxController implements Initializable{
 		
 		InfoBox.setEditable(false);
 		InfoBox.setFocusTraversable(false);		
-		Answer = 0;
+		answer = 0;
 	}
 	
 	@FXML
 	private void yesButtonAction(ActionEvent event) {
 		buttonAction(event);
-		Answer = 1;
+		answer = 1;
 	}
 	
 	@FXML
 	private void noButtonAction(ActionEvent event) {
 		buttonAction(event);
-	    Answer = 2;
+	    answer = 2;
 	}
 	
 	private void buttonAction(ActionEvent event) {
@@ -57,12 +57,12 @@ public class NewDbQuestionBoxController implements Initializable{
 	    stage.close();
 	}
 	
-	int answer() {
-		return Answer;
+	public int answer() {
+		return answer;
 	}
 
 	void resetAnswer() {
-		Answer = 0;
+		answer = 0;
 	}
 
 }

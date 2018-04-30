@@ -38,7 +38,7 @@ public class Neo4jConnection implements Runnable{
 	}
 	
 	@SuppressWarnings("deprecation")
-	private void startConnection() throws Exception {
+	public void startConnection() throws Exception {
 		if(DatabaseCheck.exists() && DBpath.exists()) {
 
 			GraphDatabaseSettings.BoltConnector bolt = GraphDatabaseSettings.boltConnector("0");
@@ -50,10 +50,11 @@ public class Neo4jConnection implements Runnable{
 					.setConfig(bolt.address, ":7688")
 					.newGraphDatabase();
 
-			//registerShutdownHook(graphDb);
+			registerShutdownHook(graphDb);
 
 			String uri = "bolt://127.0.0.1:7688";
 			driver = GraphDatabase.driver(uri, AuthTokens.basic("neo4j", "neo4jadmin"));
+			driver.session().close();
 
 			try (Session session = driver.session()) {
 				session.beginTransaction().run("MATCH (n) RETURN n LIMIT 1");
@@ -88,7 +89,7 @@ public class Neo4jConnection implements Runnable{
 		}
 	}
 	
-	private void shutdownConnection() throws Exception {
+	public void shutdownConnection() throws Exception {
 		graphDb.shutdown();
 		graphDb = null;
 		driver.close();
@@ -97,10 +98,12 @@ public class Neo4jConnection implements Runnable{
 	
 	public void run(){	
 		try {
-			if(!isConnected())
+			if(!isConnected()) {
 				startConnection();
-			else if(isConnected())
-				shutdownConnection();		
+			}
+			else if(isConnected()) {
+				shutdownConnection();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}		

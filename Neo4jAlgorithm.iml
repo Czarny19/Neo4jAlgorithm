@@ -11,6 +11,26 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: org.neo4j.driver:neo4j-java-driver:1.6.0-rc2" level="project" />
     <orderEntry type="library" name="Maven: org.neo4j:neo4j:3.4.0-rc01" level="project" />
+<<<<<<< HEAD
+=======
+    <orderEntry type="library" name="Maven: org.neo4j:neo4j-kernel:3.4.0-rc01" level="project" />
+    <orderEntry type="library" name="Maven: org.neo4j:neo4j-graphdb-api:3.4.0-rc01" level="project" />
+    <orderEntry type="library" name="Maven: org.neo4j:neo4j-resource:3.4.0-rc01" level="project" />
+    <orderEntry type="library" name="Maven: org.neo4j:neo4j-procedure-api:3.4.0-rc01" level="project" />
+    <orderEntry type="library" name="Maven: org.neo4j:neo4j-kernel-api:3.4.0-rc01" level="project" />
+    <orderEntry type="library" name="Maven: org.neo4j:neo4j-common:3.4.0-rc01" level="project" />
+    <orderEntry type="library" name="Maven: org.neo4j:neo4j-collections:3.4.0-rc01" level="project" />
+    <orderEntry type="library" name="Maven: org.neo4j:neo4j-primitive-collections:3.4.0-rc01" level="project" />
+    <orderEntry type="library" name="Maven: org.neo4j:neo4j-unsafe:3.4.0-rc01" level="project" />
+    <orderEntry type="library" name="Maven: org.neo4j:neo4j-io:3.4.0-rc01" level="project" />
+    <orderEntry type="library" name="Maven: org.neo4j:neo4j-csv:3.4.0-rc01" level="project" />
+    <orderEntry type="library" name="Maven: org.neo4j:neo4j-logging:3.4.0-rc01" level="project" />
+    <orderEntry type="library" name="Maven: org.neo4j:neo4j-lucene-upgrade:3.4.0-rc01" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-backward-codecs:5.5.0" level="project" />
+    <orderEntry type="library" name="Maven: org.neo4j:neo4j-configuration:3.4.0-rc01" level="project" />
+    <orderEntry type="library" name="Maven: org.neo4j:neo4j-index:3.4.0-rc01" level="project" />
+    <orderEntry type="library" name="Maven: org.neo4j:neo4j-spatial-index:3.4.0-rc01" level="project" />
+>>>>>>> exp
     <orderEntry type="library" name="Maven: org.neo4j:neo4j-lucene-index:3.4.0-rc01" level="project" />
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-analyzers-common:5.5.5" level="project" />
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-core:5.5.5" level="project" />
@@ -103,6 +123,7 @@
     <orderEntry type="library" name="Maven: org.codehaus.jackson:jackson-jaxrs:1.9.13" level="project" />
     <orderEntry type="library" name="Maven: org.mozilla:rhino:1.7.9" level="project" />
     <orderEntry type="library" name="Maven: org.bouncycastle:bcprov-jdk15on:1.59" level="project" />
+<<<<<<< HEAD
     <orderEntry type="library" name="Maven: org.neo4j:neo4j-kernel:3.4.0-alpha03" level="project" />
     <orderEntry type="library" name="Maven: org.neo4j:neo4j-graphdb-api:3.4.0-alpha03" level="project" />
     <orderEntry type="library" name="Maven: org.neo4j:neo4j-resource:3.4.0-alpha03" level="project" />
@@ -118,5 +139,7 @@
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-backward-codecs:5.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.neo4j:neo4j-configuration:3.4.0-alpha03" level="project" />
     <orderEntry type="library" name="Maven: org.neo4j:neo4j-index:3.4.0-alpha03" level="project" />
+=======
+>>>>>>> exp
   </component>
 </module>
