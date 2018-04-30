@@ -6,8 +6,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 
-public class BCDirected {
-	
+public class BetweennessCentrality {
+
 	protected static double INFINITY = 1000000.0; 
 	private Progress progress;
 	
@@ -16,7 +16,7 @@ public class BCDirected {
 	private ArrayList<Node> Nodes;
 	private ArrayList<Relation> Relations;
 	
-	public BCDirected(int graphSize) {
+	public BetweennessCentrality(int graphSize) {
 		this.graphSize = graphSize;
 	} 
 
@@ -34,7 +34,7 @@ public class BCDirected {
 			betweennessCentrality(Nodes, Relations); 
 		}
 	} 
-	 
+	
 	public void betweennessCentrality(ArrayList<Node> Nodes, ArrayList<Relation> Relations) { 
 		initAllNodes(Nodes); 
 	 
@@ -44,43 +44,19 @@ public class BCDirected {
 			PriorityQueue<Node> SimpleExploreResult = null; 
 	 
 			SimpleExploreResult = simpleExplore(node, Nodes); 
-			
-			while (!SimpleExploreResult.isEmpty()) { 
-				Node nodeOfS = SimpleExploreResult.poll();
-				LinkedList<Node> SuccessorsOfS = new LinkedList<Node>();
-				LinkedList<Node> PredecessorsOfS = new LinkedList<Node>();
 				
-				if(nodeOfS.id() != node.id() && node.delta() != 0) {
-					if(!nodeOfS.successors().isEmpty()) {
-						for(Node node1 : nodeOfS.predecessors()) {
-							if(node1.id() != node.id())
-								PredecessorsOfS.add(node1);		
-						}
-						while(!PredecessorsOfS.isEmpty()) {
-							nodeOfS.setDelta(nodeOfS.delta()+1);
-							Node takeOf = PredecessorsOfS.removeFirst();
-							for(Node n : takeOf.successors()) {
-								PredecessorsOfS.addLast(n);
-							}
-						}
-					}
-					if(!nodeOfS.predecessors().isEmpty()) {
-						for(Node node1 : nodeOfS.successors()) {
-							SuccessorsOfS.add(node1);
-						}
-						while(!SuccessorsOfS.isEmpty()) {
-							nodeOfS.setDelta(nodeOfS.delta()+1);
-							Node takeOf = SuccessorsOfS.removeFirst();
-							for(Node n : takeOf.successors()) {
-								SuccessorsOfS.addLast(n);
-							}
-						}
-					}
-					if(nodeOfS.delta() > 0) {
-						nodeOfS.setCentrality(nodeOfS.centrality()+(nodeOfS.delta()/(node.delta()-1)));
-					}
+			while (!SimpleExploreResult.isEmpty()) {
+				Node nodeOfS = SimpleExploreResult.poll();
+	
+				for (Node nodeOfSPredecessor : nodeOfS.predecessors()) {
+					double deltaAdd = ((nodeOfSPredecessor.sigma() / nodeOfS.sigma()) * (1.0 + nodeOfS.delta()));
+					nodeOfSPredecessor.setDelta(nodeOfSPredecessor.delta() + deltaAdd);
+				}
+				if (nodeOfS != node) {
+					nodeOfS.setCentrality(nodeOfS.centrality() + nodeOfS.delta());
 				}
 			}
+			
 			if (progress != null) 
 				progress.progress(prog / graphSize); 
 			prog++; 
@@ -92,7 +68,7 @@ public class BCDirected {
 		PriorityQueue<Node> S = new PriorityQueue<Node>(graphSize, new BrandesNodeComparatorLargerFirst()); 
 	 
 		Nodes = setupAllNodes(Nodes); 
-		
+		source.setSigma(1.0);
 		source.setDistance(0.0);
 		Q.add(source); 
 	 
@@ -111,18 +87,17 @@ public class BCDirected {
 	 
 				if (nodeTo.distance() == INFINITY) { 
 					nodeTo.setDistance(nodeFrom.distance()+1);
-					source.setDelta(source.delta()+1);
 					Q.add(nodeTo); 
 				} 
 				if (nodeTo.distance() == (nodeFrom.distance()+1)) { 
-					addToPredecessorsOf(nodeTo, nodeFrom); 
-					addToSuccessorsOf(nodeFrom, nodeTo);
+					nodeTo.setSigma(nodeTo.sigma() + nodeFrom.sigma());
+					addToPredecessorsOf(nodeTo, nodeFrom);
 				} 
 			} 
 		}
 		return S; 
 	}
-	 
+	
 	private int getNode(long ID) {
 		int index = 0;
 		for(Node n : Nodes) {
@@ -141,15 +116,6 @@ public class BCDirected {
 		HashSet<Node> set = new HashSet<Node>(); 
 		node.setPredecessors(set);
 	} 
-	
-	private void addToSuccessorsOf(Node node, Node successor) { 
-		node.successors().add(successor);
-	} 
-		 
-	private void clearSuccessorsOf(Node node) { 
-		HashSet<Node> set = new HashSet<Node>(); 
-		node.setSuccessors(set);
-	} 
 		 
 	private void initAllNodes(ArrayList<Node> Nodes) { 
 		for (Node node : Nodes) { 
@@ -161,8 +127,8 @@ public class BCDirected {
 		for (Node node : Nodes) { 
 			node.setDistance(INFINITY);
 			node.setDelta(0);
+			node.setSigma(0);
 			clearPredecessorsOf(node); 
-			clearSuccessorsOf(node);
 		} 
 		return Nodes;
 	} 
@@ -181,4 +147,5 @@ public class BCDirected {
 	public interface Progress { 
 		void progress(float percent); 
 	} 	
+
 }

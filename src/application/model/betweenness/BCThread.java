@@ -9,32 +9,36 @@ import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.Transaction;
 
-public class BCDirectedThread {
+public class BCThread {
 	
 	private Driver driver;
 	private ArrayList<Node> Nodes;
 	private ArrayList<Relation> Relations; 
 	
-	public BCDirectedThread(Driver driver) {
-		
+	private boolean isDirected;
+	
+	public BCThread(Driver driver, boolean isDirected) {
+		this.isDirected = isDirected;
 		this.driver = driver;
 		Nodes = new ArrayList<Node>();
 		Relations = new ArrayList<Relation>();		
 	}
 	
 	public void start() {
-		BCDirected bcb = new BCDirected(Integer.parseInt(getGraphSize().get(0).toString())); 
 		initNodes(getNodesList());
-		initRelations(getRelationsList());
-		System.out.println(Nodes.size());
+		initRelations(getRelationsList(),isDirected());
 		System.out.println(Relations.size());
-		bcb.init(Nodes, Relations); 
-		bcb.compute();
+		BetweennessCentrality betweennessCentrality = new BetweennessCentrality(Integer.parseInt(getGraphSize().get(0).toString())); 
+		betweennessCentrality.init(Nodes, Relations); 
+		betweennessCentrality.compute();
 		
 		Transaction transaction = driver.session().beginTransaction();
 		for(Node node : Nodes) {
-			System.out.println(node.id() + " = " + node.centrality()); 
-			insertNodeCentrality(transaction, node);
+			if(!isDirected)
+				System.out.println(node.id() + " = " + node.centrality()/2); 
+			else
+				System.out.println(node.id() + " = " + node.centrality()); 
+			insertNodeCentrality(transaction, node, isDirected());
 		}
 		transaction.success();
 		transaction.close();
@@ -47,30 +51,48 @@ public class BCDirectedThread {
 		}
 	}
 	
-	private void initRelations(List<Record> RelationsList) {
+	private void initRelations(List<Record> RelationsList, boolean isDirected) {
 		for(Record record : RelationsList) {
 			Relation relation = new Relation(
 				Long.parseLong(record.get(0).toString()),
 				Long.parseLong(record.get(1).toString()));
 			Relations.add(relation);
 		}
+		if(!isDirected) {
+			for(Record record : RelationsList) {	
+				Relation relation = new Relation(
+					Long.parseLong(record.get(1).toString()),
+					Long.parseLong(record.get(0).toString()));
+				if(!findTheSame(relation))
+					Relations.add(relation);
+			}
+		}
+	}
+	
+	private boolean findTheSame(Relation relation) {
+		for(Relation r : Relations) {
+			if(r.fromID() == relation.fromID() && r.toID() == relation.toID()) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	private Record getGraphSize(){
         try ( Session session = driver.session() ) {
-            return session.readTransaction(BCDirectedThread::getSize);
+            return session.readTransaction(BCThread::getSize);
         }
     }
 
     private List<Record> getNodesList(){
         try ( Session session = driver.session() ) {
-            return session.readTransaction(BCDirectedThread::getNodes);
+            return session.readTransaction(BCThread::getNodes);
         }
     }
 
     private List<Record> getRelationsList(){
         try ( Session session = driver.session() ) {
-            return session.readTransaction(BCDirectedThread::getRelations);
+            return session.readTransaction(BCThread::getRelations);
         }
     }
 	
@@ -87,7 +109,14 @@ public class BCDirectedThread {
         return tx.run("start n=node(*) match (n) return count(n)").list().get(0);
     }
     
-    private StatementResult insertNodeCentrality(Transaction tx, Node node) {
-    	return tx.run("MATCH (n) WHERE ID(n) = " + node.id() + " SET n.BCUndirected = " + node.centrality());
+    private StatementResult insertNodeCentrality(Transaction tx, Node node, boolean isDirected) {
+    	if(isDirected) {
+    		return tx.run("MATCH (n) WHERE ID(n) = " + node.id() + " SET n.BCDirected = " + node.centrality());
+    	}
+    	return tx.run("MATCH (n) WHERE ID(n) = " + node.id() + " SET n.BCUndirected = " + node.centrality()/2);
+    }
+    
+    private boolean isDirected() {
+    	return isDirected;
     }
 }

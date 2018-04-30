@@ -2,85 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="64a15ee9-0151-4f8e-bedb-8eb4c338c093" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_ir_3_4_3_4_0_rc01.xml" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_sun_jersey_contribs_jersey_multipart_1_19.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_jvnet_mimepull_mimepull_1_9_3.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_app_neo4j_server_static_web_3_3_0_rc1.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_util_3_4_3_4_0_beta02.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/application/model/betweenness/BetweennessCentrality.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/application/model/betweenness/BetweennessCentralityThread.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/application/model/betweenness/BetweennessCentrality$BrandesNodeComparatorLargerFirst.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/application/model/betweenness/BetweennessCentrality$BrandesNodeComparatorSmallerFirst.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/application/model/betweenness/BetweennessCentrality$Progress.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/application/model/betweenness/BetweennessCentrality.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/application/model/betweenness/BetweennessCentralityThread.class" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_all_4_1_23_Final.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_all_4_1_24_Final.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_app_neo4j_server_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_app_neo4j_server_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_client_neo4j_browser_3_1_7.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_client_neo4j_browser_3_1_8.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_driver_neo4j_java_driver_1_6_0_beta01.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_driver_neo4j_java_driver_1_6_0_rc2.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_bolt_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_bolt_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_codegen_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_codegen_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_collections_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_collections_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_command_line_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_command_line_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_common_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_common_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_configuration_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_configuration_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_consistency_check_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_consistency_check_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_csv_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_csv_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_compiler_3_3_3_3_4.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_compiler_3_3_3_3_5.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_expression_3_4_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_expression_3_4_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_frontend_3_3_3_3_4.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_frontend_3_3_3_3_5.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_interpreted_runtime_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_interpreted_runtime_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_ir_3_3_3_3_4.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_ir_3_3_3_3_5.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_ir_3_4_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_util_3_4_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_logical_plans_3_3_3_3_4.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_logical_plans_3_3_3_3_5.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_logical_plans_3_4_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_logical_plans_3_4_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_planner_3_4_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_planner_3_4_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_planner_spi_3_4_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_planner_spi_3_4_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_runtime_util_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_cypher_runtime_util_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_dbms_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_dbms_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_graph_algo_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_graph_algo_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_graphdb_api_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_graphdb_api_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_import_tool_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_import_tool_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_index_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_index_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_io_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_io_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_jmx_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_jmx_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_kernel_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_kernel_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_kernel_api_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_kernel_api_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_logging_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_logging_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_lucene_index_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_lucene_upgrade_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_lucene_upgrade_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_lucene_index_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_primitive_collections_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_primitive_collections_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_procedure_api_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_procedure_api_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_resource_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_resource_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_security_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_security_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_shell_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_shell_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_spatial_index_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_spatial_index_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_ssl_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_ssl_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_udc_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_udc_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_unsafe_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_unsafe_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_values_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_neo4j_values_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_openCypher_frontend_1_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_openCypher_frontend_1_3_4_0_rc01.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_server_api_3_4_0_beta02.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_neo4j_server_api_3_4_0_rc01.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/application/Controller/NewDbQuestionBoxController.class" afterPath="$PROJECT_DIR$/target/classes/application/Controller/NewDbQuestionBoxController.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/application/Main.class" afterPath="$PROJECT_DIR$/target/classes/application/Main.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/application/controller/Menu.class" afterPath="$PROJECT_DIR$/target/classes/application/controller/Menu.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/application/model/Algorithms.class" afterPath="$PROJECT_DIR$/target/classes/application/model/Algorithms.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/application/model/Neo4jConnection$1.class" afterPath="$PROJECT_DIR$/target/classes/application/model/Neo4jConnection$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/application/model/Neo4jConnection.class" afterPath="$PROJECT_DIR$/target/classes/application/model/Neo4jConnection.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/application/model/astar/AStar$NodeComparator.class" afterPath="$PROJECT_DIR$/target/classes/application/model/astar/AStar$NodeComparator.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/application/model/astar/AStar.class" afterPath="$PROJECT_DIR$/target/classes/application/model/astar/AStar.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/application/model/astar/AStarThread.class" afterPath="$PROJECT_DIR$/target/classes/application/model/astar/AStarThread.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/application/model/astar/GraphAStar.class" afterPath="$PROJECT_DIR$/target/classes/application/model/astar/GraphAStar.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/application/model/astar/NodeData.class" afterPath="$PROJECT_DIR$/target/classes/application/model/astar/NodeData.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/application/model/betweenness/Node.class" afterPath="$PROJECT_DIR$/target/classes/application/model/betweenness/Node.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/application/model/betweenness/Relation.class" afterPath="$PROJECT_DIR$/target/classes/application/model/betweenness/Relation.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.classpath" afterPath="$PROJECT_DIR$/.classpath" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Neo4jAlgorithm.iml" afterPath="$PROJECT_DIR$/Neo4jAlgorithm.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/application/model/Algorithms.java" afterPath="$PROJECT_DIR$/src/application/model/Algorithms.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/application/model/Neo4jConnection.java" afterPath="$PROJECT_DIR$/src/application/model/Neo4jConnection.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/application/model/betweenness/Node.java" afterPath="$PROJECT_DIR$/src/application/model/betweenness/Node.java" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -111,18 +34,8 @@
       <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
+            <state relative-caret-position="17">
               <caret line="9" column="26" lean-forward="false" selection-start-line="9" selection-start-column="26" selection-end-line="9" selection-end-column="26" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="BCDirected.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/application/model/betweenness/BCDirected.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="12" column="4" lean-forward="true" selection-start-line="12" selection-start-column="4" selection-end-line="12" selection-end-column="4" />
               <folding />
             </state>
           </provider>
@@ -143,9 +56,7 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="459">
               <caret line="37" column="47" lean-forward="false" selection-start-line="37" selection-start-column="47" selection-end-line="37" selection-end-column="47" />
-              <folding>
-                <marker date="1523905055416" expanded="true" signature="1596:1618" ph="{...}" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
@@ -160,13 +71,13 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Neo4jConnection.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Neo4jConnection.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/application/model/Neo4jConnection.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="731">
-              <caret line="57" column="0" lean-forward="false" selection-start-line="57" selection-start-column="0" selection-end-line="57" selection-end-column="0" />
+            <state relative-caret-position="136">
+              <caret line="35" column="39" lean-forward="true" selection-start-line="35" selection-start-column="39" selection-end-line="35" selection-end-column="39" />
               <folding>
-                <marker date="1524929915323" expanded="true" signature="3016:3019" ph="{...}" />
+                <element signature="e#978#1010#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -289,7 +200,9 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="Scratches" />
+      <pane id="PackagesPane" />
       <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
@@ -298,38 +211,10 @@
               <item name="Neo4jAlgorithm" type="b2602c69:ProjectViewProjectNode" />
               <item name="Neo4jAlgorithm" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="Neo4jAlgorithm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Neo4jAlgorithm" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Neo4jAlgorithm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Neo4jAlgorithm" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="application" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Neo4jAlgorithm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Neo4jAlgorithm" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="application" type="462c0819:PsiDirectoryNode" />
-              <item name="model" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Neo4jAlgorithm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Neo4jAlgorithm" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="application" type="462c0819:PsiDirectoryNode" />
-              <item name="model" type="462c0819:PsiDirectoryNode" />
-              <item name="betweenness" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -488,41 +373,42 @@
       <workItem from="1523884418740" duration="500000" />
       <workItem from="1524929949401" duration="344000" />
       <workItem from="1524930855136" duration="27000" />
+      <workItem from="1524936192440" duration="542000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="100078000" />
+    <option name="totallyTimeSpent" value="100620000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32894737" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Java Enterprise" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32894737" sideWeight="0.5030257" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32980332" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.29769737" sideWeight="0.4969743" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32894737" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2980333" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.30257186" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32980332" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39967105" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32894737" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Coverage" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.36838123" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -583,7 +469,7 @@
         <state relative-caret-position="952">
           <caret line="72" column="35" lean-forward="false" selection-start-line="72" selection-start-column="35" selection-end-line="72" selection-end-column="35" />
           <folding>
-            <marker date="1524929915323" expanded="true" signature="3016:3019" ph="{...}" />
+            <element signature="e#978#1010#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -605,7 +491,7 @@
         <state relative-caret-position="952">
           <caret line="72" column="35" lean-forward="false" selection-start-line="72" selection-start-column="35" selection-end-line="72" selection-end-column="35" />
           <folding>
-            <marker date="1524929915323" expanded="true" signature="3016:3019" ph="{...}" />
+            <element signature="e#978#1010#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -626,7 +512,7 @@
         <state relative-caret-position="1224">
           <caret line="72" column="35" lean-forward="false" selection-start-line="72" selection-start-column="35" selection-end-line="72" selection-end-column="35" />
           <folding>
-            <marker date="1524929915323" expanded="true" signature="3016:3019" ph="{...}" />
+            <element signature="e#978#1010#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -645,7 +531,7 @@
         <state relative-caret-position="1224">
           <caret line="72" column="35" lean-forward="false" selection-start-line="72" selection-start-column="35" selection-end-line="72" selection-end-column="35" />
           <folding>
-            <marker date="1524929915323" expanded="true" signature="3016:3019" ph="{...}" />
+            <element signature="e#978#1010#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -663,23 +549,23 @@
     <entry file="file://$PROJECT_DIR$/src/application/view/Connect.fxml" />
     <entry file="file://$PROJECT_DIR$/src/application/Controller/ConnectionScreenController.java" />
     <entry file="file://$PROJECT_DIR$/src/application/view/LoadingScreen.fxml">
+      <provider editor-type-id="JavaFX-Scene-Builder">
+        <state />
+      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="544">
           <caret line="32" column="18" lean-forward="true" selection-start-line="32" selection-start-column="18" selection-end-line="32" selection-end-column="18" />
         </state>
       </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/application/view/NewDatabaseQuestionBox.fxml">
       <provider editor-type-id="JavaFX-Scene-Builder">
         <state />
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/application/view/NewDatabaseQuestionBox.fxml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="238">
           <caret line="14" column="44" lean-forward="false" selection-start-line="14" selection-start-column="44" selection-end-line="14" selection-end-column="44" />
         </state>
-      </provider>
-      <provider editor-type-id="JavaFX-Scene-Builder">
-        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/application/resource/Custom.css">
@@ -709,13 +595,13 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/application/view/Menu.fxml">
+      <provider editor-type-id="JavaFX-Scene-Builder">
+        <state />
+      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
           <caret line="11" column="62" lean-forward="false" selection-start-line="11" selection-start-column="62" selection-end-line="11" selection-end-column="62" />
         </state>
-      </provider>
-      <provider editor-type-id="JavaFX-Scene-Builder">
-        <state />
       </provider>
     </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/org/neo4j/driver/neo4j-java-driver/1.5.0-beta03/neo4j-java-driver-1.5.0-beta03.jar!/org/neo4j/driver/v1/TransactionWork.class">
@@ -742,9 +628,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="459">
           <caret line="37" column="47" lean-forward="false" selection-start-line="37" selection-start-column="47" selection-end-line="37" selection-end-column="47" />
-          <folding>
-            <marker date="1523905055416" expanded="true" signature="1596:1618" ph="{...}" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -756,29 +640,22 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/application/model/Neo4jConnection.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="731">
-          <caret line="57" column="0" lean-forward="false" selection-start-line="57" selection-start-column="0" selection-end-line="57" selection-end-column="0" />
-          <folding>
-            <marker date="1524929915323" expanded="true" signature="3016:3019" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
+        <state relative-caret-position="17">
           <caret line="9" column="26" lean-forward="false" selection-start-line="9" selection-start-column="26" selection-end-line="9" selection-end-column="26" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/application/model/betweenness/BCDirected.java">
+    <entry file="file://$PROJECT_DIR$/src/application/model/betweenness/BCDirected.java" />
+    <entry file="file://$PROJECT_DIR$/src/application/model/Neo4jConnection.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
-          <caret line="12" column="4" lean-forward="true" selection-start-line="12" selection-start-column="4" selection-end-line="12" selection-end-column="4" />
-          <folding />
+          <caret line="35" column="39" lean-forward="true" selection-start-line="35" selection-start-column="39" selection-end-line="35" selection-end-column="39" />
+          <folding>
+            <element signature="e#978#1010#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

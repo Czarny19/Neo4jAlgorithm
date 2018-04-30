@@ -38,7 +38,7 @@ public class Neo4jConnection implements Runnable{
 	}
 	
 	@SuppressWarnings("deprecation")
-	private void startConnection() throws Exception {
+	public void startConnection() throws Exception {
 		if(DatabaseCheck.exists() && DBpath.exists()) {
 
 			GraphDatabaseSettings.BoltConnector bolt = GraphDatabaseSettings.boltConnector("0");
@@ -49,6 +49,8 @@ public class Neo4jConnection implements Runnable{
 					.setConfig(bolt.enabled, "true")
 					.setConfig(bolt.address, ":7688")
 					.newGraphDatabase();
+			
+//			graphDb = new GraphDatabaseFactory().newEmbeddedDatabase( DBpath );
 
 			registerShutdownHook(graphDb);
 
@@ -89,7 +91,7 @@ public class Neo4jConnection implements Runnable{
 		}
 	}
 	
-	private void shutdownConnection() throws Exception {
+	public void shutdownConnection() throws Exception {
 		graphDb.shutdown();
 		graphDb = null;
 		driver.close();

@@ -69,8 +69,11 @@ public class Menu implements Initializable{
 
 		ConnectionStatus.setText(StatusText.get(0));
 
-		ObservableList<String> ChoiceBoxItems = FXCollections.observableArrayList("A*","Betweenness centrality");
-		AlgorithmChooser.setItems(ChoiceBoxItems);	
+		ObservableList<String> ChoiceBoxItems = FXCollections.observableArrayList(
+				"A*",
+				"Betweenness centrality (Relacje skierowane)",
+				"Betweenness centrality (Relacje nieskierowane)");
+		AlgorithmChooser.setItems(ChoiceBoxItems);
 	}
 
 	public void initData(Neo4jConnection N4jC) {
@@ -221,7 +224,9 @@ public class Menu implements Initializable{
 			algorithms.initAStar(StartNode.getText(), EndNode.getText(), Neo4jConnection.getDriver());
 			algorithms.AStar();
 		}
-		if(AlgorithmChooser.getSelectionModel().getSelectedItem() == "Betweenness centrality")
-			algorithms.betweennessCentrality(Neo4jConnection.getDriver());
+		if(AlgorithmChooser.getSelectionModel().getSelectedItem() == "Betweenness centrality (Relacje skierowane)")
+			algorithms.betweennessCentrality(Neo4jConnection.getDriver(),true);
+		if(AlgorithmChooser.getSelectionModel().getSelectedItem() == "Betweenness centrality (Relacje nieskierowane)")
+			algorithms.betweennessCentrality(Neo4jConnection.getDriver(),false);
 	}
 }
