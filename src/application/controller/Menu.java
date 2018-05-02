@@ -72,7 +72,8 @@ public class Menu implements Initializable{
 		ObservableList<String> ChoiceBoxItems = FXCollections.observableArrayList(
 				"A*",
 				"Betweenness centrality (Relacje skierowane)",
-				"Betweenness centrality (Relacje nieskierowane)");
+				"Betweenness centrality (Relacje nieskierowane)",
+				"Kolorowanie grafu");
 		AlgorithmChooser.setItems(ChoiceBoxItems);
 	}
 
@@ -228,5 +229,7 @@ public class Menu implements Initializable{
 			algorithms.betweennessCentrality(Neo4jConnection.getDriver(),true);
 		if(AlgorithmChooser.getSelectionModel().getSelectedItem() == "Betweenness centrality (Relacje nieskierowane)")
 			algorithms.betweennessCentrality(Neo4jConnection.getDriver(),false);
+		if(AlgorithmChooser.getSelectionModel().getSelectedItem() == "Kolorowanie grafu")
+			algorithms.graphColoring(Neo4jConnection.getDriver());
 	}
 }

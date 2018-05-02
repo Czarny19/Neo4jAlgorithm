@@ -10,6 +10,7 @@ import application.model.astar.AStar;
 import application.model.astar.AStarThread;
 import application.model.astar.GraphAStar;
 import application.model.betweenness.BCThread;
+import application.model.coloring.GraphColoring;
 import javafx.scene.control.Alert;
 
 /// B³¹d przy wpisywaniu z³ego startu i koñca !!!!
@@ -95,5 +96,10 @@ public class Algorithms {
 	public void betweennessCentrality(Driver Neo4jDriver, boolean isDirected) {
 		BCThread BCDirectedThread = new BCThread(Neo4jDriver,isDirected);
 		BCDirectedThread.start();
+	}
+	
+	public void graphColoring(Driver Neo4jDriver) {
+		GraphColoring graphColoring = new GraphColoring(Neo4jDriver);
+		graphColoring.colourVertices();
 	}
 }

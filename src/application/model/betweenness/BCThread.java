@@ -27,7 +27,6 @@ public class BCThread {
 	public void start() {
 		initNodes(getNodesList());
 		initRelations(getRelationsList(),isDirected());
-		System.out.println(Relations.size());
 		BetweennessCentrality betweennessCentrality = new BetweennessCentrality(Integer.parseInt(getGraphSize().get(0).toString())); 
 		betweennessCentrality.init(Nodes, Relations); 
 		betweennessCentrality.compute();
