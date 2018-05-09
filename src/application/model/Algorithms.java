@@ -92,9 +92,9 @@ public class Algorithms {
 		}
 	}
 	
-	public void vertexConnectivity(Driver Neo4jDriver) {
+	public void vertexConnectivity(Driver Neo4jDriver, boolean doEdges) {
 		VCThread VCThread = new VCThread(Neo4jDriver);
-		VCThread.compute();
+		VCThread.compute(doEdges);
 	}
 	
 	private void aStarMessage(boolean startExists, boolean endExists, boolean badFormat) {

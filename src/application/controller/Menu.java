@@ -52,11 +52,11 @@ public class Menu implements Initializable{
 	@FXML
 	private TextField EndNode;
 	@FXML
-	private CheckBox isIndegree;
+	private CheckBox isOption1;
 	@FXML
-	private CheckBox isOutdegree;
+	private CheckBox isOption2;
 	@FXML
-	private CheckBox isBoth;
+	private CheckBox isOption3;
 	@FXML
 	private TextField PortInput;
 	@FXML
@@ -76,11 +76,11 @@ public class Menu implements Initializable{
 		AlgorithmStatus.setVisible(false);
 		AlgorithmText.setVisible(false);
 		DBDisconnect.setVisible(false);
-		isOutdegree.setVisible(false);
-		isIndegree.setVisible(false);
+		isOption2.setVisible(false);
+		isOption1.setVisible(false);
 		StartNode.setVisible(false);		
 		EndNode.setVisible(false);
-		isBoth.setVisible(false);
+		isOption3.setVisible(false);
 		Start.setVisible(false);
 			
 		Path.setText("");
@@ -255,14 +255,14 @@ public class Menu implements Initializable{
 			EndNode.setVisible(false);
 			EndNode.setText("");
 			
-			isIndegree.setVisible(false);
-			isIndegree.setSelected(false);
+			isOption1.setVisible(false);
+			isOption1.setSelected(false);
 			
-			isOutdegree.setVisible(false);
-			isOutdegree.setSelected(false);
+			isOption2.setVisible(false);
+			isOption2.setSelected(false);
 			
-			isBoth.setVisible(false);
-			isBoth.setSelected(false);
+			isOption3.setVisible(false);
+			isOption3.setSelected(false);
 			
 			if(!Objects.equals(newValue, "")){
 				Start.setVisible(true);
@@ -272,9 +272,18 @@ public class Menu implements Initializable{
 			   EndNode.setVisible(true);
 			}
 			if(Objects.equals(newValue, "Degree centrality")) {
-				isIndegree.setVisible(true);
-				isOutdegree.setVisible(true);
-				isBoth.setVisible(true);
+				isOption1.setText("Relacje wchodz¹ce");
+				isOption2.setText("Relacje wychodz¹ce");
+				isOption3.setText("Wszystkie relacje");
+				isOption1.setVisible(true);
+				isOption2.setVisible(true);
+				isOption3.setVisible(true);
+			}
+			if(Objects.equals(newValue, "Vertex connectivity")) {
+				isOption1.setText("Wyszukiwanie przeciêæ");
+				isOption2.setText("Wyszukiwanie mostów");
+				isOption1.setVisible(true);
+				isOption2.setVisible(true);
 			}
         });
 	}
@@ -295,12 +304,15 @@ public class Menu implements Initializable{
 		if(AlgorithmChooser.getSelectionModel().getSelectedItem() == "Degree centrality") {
 			algorithms.degreeCentrality(
 					Neo4jConnection.getDriver(),
-					isIndegree.isSelected(),
-					isOutdegree.isSelected(),
-					isBoth.isSelected());
+					isOption1.isSelected(),
+					isOption2.isSelected(),
+					isOption3.isSelected());
 		}
 		if(AlgorithmChooser.getSelectionModel().getSelectedItem() == "Vertex connectivity") {
-			algorithms.vertexConnectivity(Neo4jConnection.getDriver());
+			if(isOption1.isSelected())
+				algorithms.vertexConnectivity(Neo4jConnection.getDriver(),false);
+			if(isOption2.isSelected())
+				algorithms.vertexConnectivity(Neo4jConnection.getDriver(),true);
 		}
 			
 	}

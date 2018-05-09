@@ -21,9 +21,9 @@
    <Button fx:id="DBDisconnect" layoutX="113.0" layoutY="57.0" mnemonicParsing="false" onAction="#Disconnect" prefHeight="36.0" prefWidth="100.0" text="Rozłącz" />
    <TextField fx:id="StartNode" layoutX="14.0" layoutY="175.0" promptText="Id węzła początkowego" />
    <TextField fx:id="EndNode" layoutX="14.0" layoutY="212.0" promptText="Id węzła docelowego" />
-   <CheckBox fx:id="isIndegree" layoutX="12.0" layoutY="175.0" mnemonicParsing="false" text="Relacje wchodzące" />
-   <CheckBox fx:id="isOutdegree" layoutX="12.0" layoutY="204.0" mnemonicParsing="false" text="Relacje wychodzące" />
-   <CheckBox fx:id="isBoth" layoutX="12.0" layoutY="233.0" mnemonicParsing="false" text="Wszystkie relacje" />
+   <CheckBox fx:id="isOption1" layoutX="12.0" layoutY="175.0" mnemonicParsing="false"/>
+   <CheckBox fx:id="isOption2" layoutX="12.0" layoutY="204.0" mnemonicParsing="false"/>
+   <CheckBox fx:id="isOption3" layoutX="12.0" layoutY="233.0" mnemonicParsing="false"/>
    <TextField fx:id="PortInput" layoutX="432.0" layoutY="57.0" prefHeight="36.0" prefWidth="100.0" promptText="7690" />
    <TextField fx:id="PortPrompt" focusTraversable="false" layoutX="345.0" layoutY="57.0" prefHeight="36.0" prefWidth="87.0" text="Numer Portu:" />
    <TextField fx:id="ConnectionStatus" focusTraversable="false" layoutX="14.0" layoutY="362.0" prefHeight="25.0" prefWidth="560.0" />
