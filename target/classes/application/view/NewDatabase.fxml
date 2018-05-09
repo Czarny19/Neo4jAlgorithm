@@ -7,7 +7,7 @@
 
 <Pane fx:id="NewDBQuestion" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
       prefHeight="150.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="application.controller.NewDbQuestionBoxController">
+      fx:controller="application.controller.NewDatabaseController">
    <Button layoutX="18.0" layoutY="94.0" mnemonicParsing="false" onAction="#yesButtonAction"
            prefHeight="25.0" prefWidth="101.0" text="Tak"/>
    <Button layoutX="181.0" layoutY="94.0" mnemonicParsing="false" onAction="#noButtonAction"

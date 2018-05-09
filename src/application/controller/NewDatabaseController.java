@@ -17,7 +17,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-public class NewDbQuestionBoxController implements Initializable{
+public class NewDatabaseController implements Initializable{
 	
 	@FXML
 	private Pane NewDBQuestion;

@@ -10,20 +10,23 @@ import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.Transaction;
 
+import application.model.Node;
+
 public class GraphColoring {
 
 	private Driver driver;
-	private List<Vertex> Vertexes;
+	private List<Node> Vertexes;
 	
 	public GraphColoring(Driver driver){
 		this.driver = driver;
-		Vertexes = new ArrayList<Vertex>();
+		Vertexes = new ArrayList<Node>();
 		for(Record record : getNodesList()) {
-			Vertex vertex = new Vertex(Long.parseLong(record.get(0).toString()));
-			for(Record relationRecord : getRelationsList(vertex.node())) {
-				vertex.neighbors().add(Long.parseLong(relationRecord.get(0).toString()));
+			Node node = new Node(Integer.parseInt(record.get(0).toString()));
+			node.coloring();
+			for(Record relationRecord : getRelationsList(node.id())) {
+				node.neighbors().add(Integer.parseInt(relationRecord.get(0).toString()));
 			}
-			Vertexes.add(vertex);
+			Vertexes.add(node);
 		}	
 	}
 	
@@ -31,7 +34,7 @@ public class GraphColoring {
 		Collections.sort(Vertexes, new VertexComparator());
 		for(int i = 0; i < Vertexes.size(); i++) {
 			for(int j = 0; j < Vertexes.size();) {
-				if(Vertexes.get(i).neighbors().contains(Vertexes.get(j).node())){
+				if(Vertexes.get(i).neighbors().contains(Vertexes.get(j).id())){
 					if(Vertexes.get(j).color() == Vertexes.get(i).color())
 						Vertexes.get(j).setColor(Vertexes.get(j).color()+1);	
 					else
@@ -43,8 +46,8 @@ public class GraphColoring {
 		}
 		
 		Transaction transaction = driver.session().beginTransaction();		
-		for(Vertex vertex : Vertexes) {
-			insertNodeColor(transaction,vertex.node(),vertex.color());
+		for(Node vertex : Vertexes) {
+			insertNodeColor(transaction,vertex.id(),vertex.color());
 		}
 		transaction.success();
 		transaction.close();				

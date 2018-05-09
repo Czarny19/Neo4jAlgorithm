@@ -1,5 +1,12 @@
 package application.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Objects;
+import java.util.ResourceBundle;
+
 import application.model.Algorithms;
 import application.model.Neo4jConnection;
 import javafx.animation.PauseTransition;
@@ -7,17 +14,16 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.DirectoryChooser;
 import javafx.util.Duration;
-
-import java.io.File;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.ResourceBundle;
 
 public class Menu implements Initializable{
 
@@ -45,6 +51,16 @@ public class Menu implements Initializable{
 	private TextField StartNode;
 	@FXML
 	private TextField EndNode;
+	@FXML
+	private CheckBox isIndegree;
+	@FXML
+	private CheckBox isOutdegree;
+	@FXML
+	private CheckBox isBoth;
+	@FXML
+	private TextField PortInput;
+	@FXML
+	private TextField PortPrompt;
 	
 	private static Neo4jConnection Neo4jConnection;
 	
@@ -60,8 +76,11 @@ public class Menu implements Initializable{
 		AlgorithmStatus.setVisible(false);
 		AlgorithmText.setVisible(false);
 		DBDisconnect.setVisible(false);
-		StartNode.setVisible(false);
+		isOutdegree.setVisible(false);
+		isIndegree.setVisible(false);
+		StartNode.setVisible(false);		
 		EndNode.setVisible(false);
+		isBoth.setVisible(false);
 		Start.setVisible(false);
 			
 		Path.setText("");
@@ -73,8 +92,16 @@ public class Menu implements Initializable{
 				"A*",
 				"Betweenness centrality (Relacje skierowane)",
 				"Betweenness centrality (Relacje nieskierowane)",
-				"Kolorowanie grafu");
+				"Kolorowanie grafu",
+				"Degree centrality",
+				"Vertex connectivity");
 		AlgorithmChooser.setItems(ChoiceBoxItems);
+		
+		AlgorithmText.setBackground(Background.EMPTY);
+		PortPrompt.setBackground(Background.EMPTY);
+
+		ConnectionStatus.setEditable(false);
+		PortPrompt.setEditable(false);
 	}
 
 	public void initData(Neo4jConnection N4jC) {
@@ -88,7 +115,7 @@ public class Menu implements Initializable{
 	private void statusTextInit() {
 		StatusText.add("Status po³¹czenia: Brak po³¹czenia z baz¹");
 		StatusText.add("Status po³¹czenia: Nawi¹zywanie po³¹czenia");
-		StatusText.add("Status po³¹czenia: B³¹d - podana œcie¿ka nie istnieje");
+		StatusText.add("Status po³¹czenia: B³¹d po³¹czenia");
 		StatusText.add("Status po³¹czenia: Po³¹czono z baz¹");
 		StatusText.add("Status po³¹czenia: Roz³¹czanie");
 	}
@@ -97,16 +124,19 @@ public class Menu implements Initializable{
 	private void BrowseButtonAction() {
 		DirectoryChooser browse = new DirectoryChooser();
 		File selectedDirectory = browse.showDialog(null);
-		Path.setText(selectedDirectory.toString());
+		if(selectedDirectory != null)
+			Path.setText(selectedDirectory.toString());
 	}
 
 	@FXML
-    private void Connect() {		
+    private void Connect() throws IOException {		
 		DBConnect.setDisable(true);
 		pathOptions(false);
+		portOptions(false);
 
-		Neo4jConnection.initPath(Path.getText());
-		Thread StartConnection = new Thread(Neo4jConnection);
+	    Neo4jConnection.initPath(Path.getText());  
+	    Neo4jConnection.initPortNumber(PortInput.getText());
+	    Thread StartConnection = new Thread(Neo4jConnection);
 		StartConnection.start();
 
 		connectionStatusChange();
@@ -129,6 +159,7 @@ public class Menu implements Initializable{
 				ConnectionStatus.setText(StatusText.get(0));
 				ConnectionStatusIndicator.setFill(Color.RED);				
 				pathOptions(true);	
+				portOptions(true);
 				dbButtonsOptions(false,false);
 			}
         });
@@ -136,9 +167,9 @@ public class Menu implements Initializable{
 		
 		AlgorithmChooser.setVisible(false);
 		AlgorithmText.setVisible(false);
-		Start.setVisible(false);
 		StartNode.setVisible(false);
 		EndNode.setVisible(false);
+		Start.setVisible(false);	
 	}
 	
 	private void statusAnimation(int statusNumber) {
@@ -150,7 +181,7 @@ public class Menu implements Initializable{
 	}
 	
 	private void connectionStatusChange() {
-		NewDbQuestionBoxController QuestionCtr = new NewDbQuestionBoxController();
+		NewDatabaseController QuestionCtr = new NewDatabaseController();
 		ConnectionStatusIndicator.setFill(Color.YELLOW);
 		
 		StatusDelay.setOnFinished(delayEvent -> {
@@ -171,6 +202,7 @@ public class Menu implements Initializable{
 					ConnectionStatus.setText(StatusText.get(0));
 					ConnectionStatusIndicator.setFill(Color.RED);
 					pathOptions(true);
+					portOptions(true);
 					dbButtonsOptions(false,false);
 				}
 			}
@@ -179,6 +211,7 @@ public class Menu implements Initializable{
 				ConnectionStatus.setText(StatusText.get(2));
 				ConnectionStatusIndicator.setFill(Color.RED);
 				pathOptions(true);
+				portOptions(true);
 				dbButtonsOptions(false,false);
 			}
 			if(Neo4jConnection.isConnected()) {
@@ -197,6 +230,15 @@ public class Menu implements Initializable{
 		Path.setFocusTraversable(on);
 	}
 	
+	private void portOptions(boolean on) {
+		PortInput.setEditable(on);
+		PortInput.setFocusTraversable(on);
+		if(PortInput.getText().isEmpty() && on == false)
+			PortInput.setText("7690");
+		if(PortInput.getText().equals("7690") && on == true)
+			PortInput.setText("");
+	}
+	
 	private void dbButtonsOptions(boolean DisconnectVisible, boolean ConnectDisabled) {
 		DBDisconnect.setVisible(DisconnectVisible);
 		DBConnect.setDisable(ConnectDisabled);
@@ -206,14 +248,33 @@ public class Menu implements Initializable{
 	private void algorithmChosen(){
 		AlgorithmChooser.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			Start.setVisible(false);
+			
 			StartNode.setVisible(false);
+			StartNode.setText("");
+			
 			EndNode.setVisible(false);
+			EndNode.setText("");
+			
+			isIndegree.setVisible(false);
+			isIndegree.setSelected(false);
+			
+			isOutdegree.setVisible(false);
+			isOutdegree.setSelected(false);
+			
+			isBoth.setVisible(false);
+			isBoth.setSelected(false);
+			
 			if(!Objects.equals(newValue, "")){
 				Start.setVisible(true);
 			}
 			if(Objects.equals(newValue, "A*")){
 			   StartNode.setVisible(true);
 			   EndNode.setVisible(true);
+			}
+			if(Objects.equals(newValue, "Degree centrality")) {
+				isIndegree.setVisible(true);
+				isOutdegree.setVisible(true);
+				isBoth.setVisible(true);
 			}
         });
 	}
@@ -231,5 +292,16 @@ public class Menu implements Initializable{
 			algorithms.betweennessCentrality(Neo4jConnection.getDriver(),false);
 		if(AlgorithmChooser.getSelectionModel().getSelectedItem() == "Kolorowanie grafu")
 			algorithms.graphColoring(Neo4jConnection.getDriver());
+		if(AlgorithmChooser.getSelectionModel().getSelectedItem() == "Degree centrality") {
+			algorithms.degreeCentrality(
+					Neo4jConnection.getDriver(),
+					isIndegree.isSelected(),
+					isOutdegree.isSelected(),
+					isBoth.isSelected());
+		}
+		if(AlgorithmChooser.getSelectionModel().getSelectedItem() == "Vertex connectivity") {
+			algorithms.vertexConnectivity(Neo4jConnection.getDriver());
+		}
+			
 	}
 }

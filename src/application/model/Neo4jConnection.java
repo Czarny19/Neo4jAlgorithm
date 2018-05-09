@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.neo4j.driver.v1.*;
+import org.neo4j.driver.v1.Driver;
+import org.neo4j.driver.v1.GraphDatabase;
+import org.neo4j.driver.v1.Session;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.factory.GraphDatabaseSettings;
@@ -13,6 +15,7 @@ import org.neo4j.graphdb.factory.GraphDatabaseSettings;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -20,6 +23,8 @@ public class Neo4jConnection implements Runnable{
 	
 	private GraphDatabaseService graphDb;
 	private Driver driver;
+
+	private String port;
 	
 	private File DBpath;
 	private File DatabaseCheck;
@@ -37,30 +42,51 @@ public class Neo4jConnection implements Runnable{
 		DBpath = new File(path);
 	}
 	
+	public void initPortNumber(String port) {	
+		if(port.isEmpty())
+			this.port = ":7690";
+		else
+			this.port = ":" + port;	
+	}
+	
 	@SuppressWarnings("deprecation")
-	public void startConnection() throws Exception {
+	public void startConnection() throws IOException{
 		if(DatabaseCheck.exists() && DBpath.exists()) {
-
+							
 			GraphDatabaseSettings.BoltConnector bolt = GraphDatabaseSettings.boltConnector("0");
 
-			graphDb = new GraphDatabaseFactory()
-					.newEmbeddedDatabaseBuilder(DBpath)
-					.setConfig(bolt.type, "BOLT")
-					.setConfig(bolt.enabled, "true")
-					.setConfig(bolt.address, ":7688")
-					.newGraphDatabase();
+			try{
+				graphDb = new GraphDatabaseFactory()
+						.newEmbeddedDatabaseBuilder(DBpath)
+						.setConfig(bolt.type, "BOLT")
+						.setConfig(bolt.enabled, "true")
+						.setConfig(bolt.address, port)
+						.newGraphDatabase();
+						
+				registerShutdownHook(graphDb);
+									
+				driver = GraphDatabase.driver("bolt://127.0.0.1" + port);
 
-			registerShutdownHook(graphDb);
+				try (Session session = driver.session()) {
+					session.beginTransaction().run("MATCH (n) RETURN n LIMIT 1");
+				}
 
-			String uri = "bolt://127.0.0.1:7688";
-			driver = GraphDatabase.driver(uri, AuthTokens.basic("neo4j", "neo4jadmin"));
-			driver.session().close();
-
-			try (Session session = driver.session()) {
-				session.beginTransaction().run("MATCH (n) RETURN n LIMIT 1");
-			}
-
-			isConnected = true;
+				isConnected = true;
+			}catch(Exception e) {
+				ConnectionErr = true;
+				Platform.runLater(new Runnable(){
+					@Override
+					public void run() {
+						Alert alert = new Alert(Alert.AlertType.INFORMATION);
+						alert.setTitle("B³¹d po³¹czenia!");
+						alert.setHeaderText(null);
+						alert.setContentText(
+							"Nie mo¿na nawi¹zaæ po³¹czenia z baz¹, nale¿y zakoñczyæ wszystkie inne po³¹czenia z baz¹, " +
+							"lub zwolniæ port " + port.replaceAll(":", ""));
+						alert.showAndWait();
+					}
+				});
+			}	
 		}
 		if(!DBpath.exists()) {
 			ConnectionErr = true;
@@ -71,7 +97,7 @@ public class Neo4jConnection implements Runnable{
 				public void run() {
 					try {
 						final FXMLLoader fxmlLoader = new FXMLLoader();
-					    fxmlLoader.setLocation(getClass().getResource("/application/view/NewDatabaseQuestionBox.fxml"));
+					    fxmlLoader.setLocation(getClass().getResource("/application/view/NewDatabase.fxml"));
 			        
 					    Scene QuestionScene = new Scene(fxmlLoader.load(), 300, 150);
 					    Stage QuestionStage = new Stage();

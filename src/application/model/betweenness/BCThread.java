@@ -9,6 +9,8 @@ import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.Transaction;
 
+import application.model.Node;
+
 public class BCThread {
 	
 	private Driver driver;
@@ -45,7 +47,7 @@ public class BCThread {
 	
 	private void initNodes(List<Record> NodesList) {
 		for(Record record : NodesList) {
-			Node node = new Node(Long.parseLong(record.get(0).toString()));
+			Node node = new Node(Integer.parseInt(record.get(0).toString()));
 			Nodes.add(node);
 		}
 	}

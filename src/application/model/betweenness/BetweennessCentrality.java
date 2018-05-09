@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 
+import application.model.Node;
+
 public class BetweennessCentrality {
 
 	protected static double INFINITY = 1000000.0; 

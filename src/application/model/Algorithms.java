@@ -11,13 +11,14 @@ import application.model.astar.AStarThread;
 import application.model.astar.GraphAStar;
 import application.model.betweenness.BCThread;
 import application.model.coloring.GraphColoring;
+import application.model.connectivity.VCThread;
+import application.model.degree.DegreeCentrality;
 import javafx.scene.control.Alert;
 
 /// B³¹d przy wpisywaniu z³ego startu i koñca !!!!
 public class Algorithms {
 	
 	private Driver Neo4jDriver;
-	// A* algorithm variables
 	private String StartNode;
 	private String EndNode;
 	
@@ -64,14 +65,39 @@ public class Algorithms {
 				Start_A_star.start();
 			}
 			else
-				AStarMessage(startExists, endExists, false);
+				aStarMessage(startExists, endExists, false);
 		}
 		else {
-			AStarMessage(true, true, true);
+			aStarMessage(true, true, true);
 		}
 	}
 	
-	private void AStarMessage(boolean startExists, boolean endExists, boolean badFormat) {
+	public void betweennessCentrality(Driver Neo4jDriver, boolean isDirected) {
+		BCThread BCDirectedThread = new BCThread(Neo4jDriver,isDirected);
+		BCDirectedThread.start();
+	}
+	
+	public void graphColoring(Driver Neo4jDriver) {
+		GraphColoring graphColoring = new GraphColoring(Neo4jDriver);
+		graphColoring.colourVertices();
+	}
+	
+	public void degreeCentrality(Driver Neo4jDriver, boolean isIndegree, boolean isOutdegree, boolean isBoth) {
+		if(!isIndegree && !isOutdegree && !isBoth) {
+			degreeCentralityMessage();
+		}
+		if(isIndegree || isOutdegree || isBoth){
+			DegreeCentrality degreeCentrality = new DegreeCentrality(Neo4jDriver, isIndegree, isOutdegree, isBoth);
+			degreeCentrality.compute();
+		}
+	}
+	
+	public void vertexConnectivity(Driver Neo4jDriver) {
+		VCThread VCThread = new VCThread(Neo4jDriver);
+		VCThread.compute();
+	}
+	
+	private void aStarMessage(boolean startExists, boolean endExists, boolean badFormat) {
 		Alert alert = new Alert(Alert.AlertType.INFORMATION);
 		alert.setTitle("B³¹d!");
 		alert.setHeaderText(null);
@@ -93,13 +119,11 @@ public class Algorithms {
 		alert.showAndWait();
 	}
 	
-	public void betweennessCentrality(Driver Neo4jDriver, boolean isDirected) {
-		BCThread BCDirectedThread = new BCThread(Neo4jDriver,isDirected);
-		BCDirectedThread.start();
-	}
-	
-	public void graphColoring(Driver Neo4jDriver) {
-		GraphColoring graphColoring = new GraphColoring(Neo4jDriver);
-		graphColoring.colourVertices();
+	private void degreeCentralityMessage() {
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+		alert.setTitle("B³¹d!");
+		alert.setHeaderText(null);
+		alert.setContentText("Nale¿y zaznaczyæ przynajmniej jeden z warunków.");
+		alert.showAndWait();
 	}
 }
