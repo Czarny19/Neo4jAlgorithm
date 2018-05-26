@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
-import org.neo4j.driver.v1.Session;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.factory.GraphDatabaseSettings;
@@ -66,10 +65,14 @@ public class Neo4jConnection implements Runnable{
 				registerShutdownHook(graphDb);
 									
 				driver = GraphDatabase.driver("bolt://127.0.0.1" + port);
-
-				try (Session session = driver.session()) {
-					session.beginTransaction().run("MATCH (n) RETURN n LIMIT 1");
-				}
+				
+//				PathFinder<WeightedPath> finder = GraphAlgoFactory.dijkstra(
+//				PathExpanders.forTypeAndDirection(  RelationshipType.withName("ZNA"), Direction.BOTH ), "Distance" );
+//
+//				WeightedPath path = finder.findSinglePath( graphDb.getNodeById(6), graphDb.getNodeById(5) );
+//
+//					// Get the weight for the found path
+//				System.out.println(path.weight());	
 
 				isConnected = true;
 			}catch(Exception e) {
@@ -90,6 +93,16 @@ public class Neo4jConnection implements Runnable{
 		}
 		if(!DBpath.exists()) {
 			ConnectionErr = true;
+			Platform.runLater(new Runnable(){
+				@Override
+				public void run() {
+					Alert alert = new Alert(Alert.AlertType.INFORMATION);
+					alert.setTitle("B³¹d po³¹czenia!");
+					alert.setHeaderText(null);
+					alert.setContentText("Podana œcie¿ka nie jest prawid³owa lub nie istnieje!");
+					alert.showAndWait();
+				}
+			});
 		}
 		if(!DatabaseCheck.exists() && DBpath.exists()){
 			Platform.runLater(new Runnable(){

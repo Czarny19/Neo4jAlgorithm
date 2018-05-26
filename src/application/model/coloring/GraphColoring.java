@@ -10,33 +10,30 @@ import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.Transaction;
 
-import application.model.Node;
-
 public class GraphColoring {
 
-	private Driver driver;
-	private List<Node> Vertexes;
+	private Driver noe4jdriver;
+	private ArrayList<NodeGC> Nodes;
 	
-	public GraphColoring(Driver driver){
-		this.driver = driver;
-		Vertexes = new ArrayList<Node>();
+	public GraphColoring(Driver neo4jdriver){
+		this.noe4jdriver = neo4jdriver;
+		Nodes = new ArrayList<NodeGC>();
 		for(Record record : getNodesList()) {
-			Node node = new Node(Integer.parseInt(record.get(0).toString()));
-			node.coloring();
+			NodeGC node = new NodeGC(record.get(0).asInt());
 			for(Record relationRecord : getRelationsList(node.id())) {
-				node.neighbors().add(Integer.parseInt(relationRecord.get(0).toString()));
+				node.neighbors().add(relationRecord.get(0).asInt());
 			}
-			Vertexes.add(node);
+			Nodes.add(node);
 		}	
 	}
 	
 	public void colourVertices(){
-		Collections.sort(Vertexes, new VertexComparator());
-		for(int i = 0; i < Vertexes.size(); i++) {
-			for(int j = 0; j < Vertexes.size();) {
-				if(Vertexes.get(i).neighbors().contains(Vertexes.get(j).id())){
-					if(Vertexes.get(j).color() == Vertexes.get(i).color())
-						Vertexes.get(j).setColor(Vertexes.get(j).color()+1);	
+		Collections.sort(Nodes, new NodeComparator());
+		for(int i = 0; i < Nodes.size(); i++) {
+			for(int j = 0; j < Nodes.size();) {
+				if(Nodes.get(i).neighbors().contains(Nodes.get(j).id())){
+					if(Nodes.get(j).color() == Nodes.get(i).color())
+						Nodes.get(j).setColor(Nodes.get(j).color()+1);	
 					else
 						j+=1;
 				}
@@ -45,8 +42,8 @@ public class GraphColoring {
 			}
 		}
 		
-		Transaction transaction = driver.session().beginTransaction();		
-		for(Node vertex : Vertexes) {
+		Transaction transaction = noe4jdriver.session().beginTransaction();		
+		for(NodeGC vertex : Nodes) {
 			insertNodeColor(transaction,vertex.id(),vertex.color());
 		}
 		transaction.success();
@@ -60,13 +57,13 @@ public class GraphColoring {
 //    }
 
     private List<Record> getNodesList(){
-        try ( Session session = driver.session() ) {
+        try ( Session session = noe4jdriver.session() ) {
             return session.readTransaction(GraphColoring::getNodes);
         }
     }
 
     private ArrayList<Record> getRelationsList(long node){
-        try ( Session session = driver.session() ) {
+        try ( Session session = noe4jdriver.session() ) {
         	Transaction tx = session.beginTransaction();
         	ArrayList<Record> RelationsList = new ArrayList<Record>(); 
         	RelationsList.addAll(getRelationsTo(tx,node));

@@ -3,7 +3,7 @@ package application.model.connectivity;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class VCBag<Item> implements Iterable<Item>{
+public class NodeConnBag<Item> implements Iterable<Item>{
 
 	private int Size;
 	private Node<Item> first;
@@ -13,7 +13,7 @@ public class VCBag<Item> implements Iterable<Item>{
 	    private Node<Item> next;
 	}
 	 
-	public VCBag(){
+	public NodeConnBag(){
 		first = null;
 	    Size = 0;
 	}

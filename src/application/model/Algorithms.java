@@ -1,99 +1,73 @@
 package application.model;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
+import org.apache.commons.lang.time.StopWatch;
 import org.neo4j.driver.v1.Driver;
-import org.neo4j.driver.v1.Record;
 
-import application.model.astar.AStar;
 import application.model.astar.AStarThread;
-import application.model.astar.GraphAStar;
 import application.model.betweenness.BCThread;
 import application.model.coloring.GraphColoring;
-import application.model.connectivity.VCThread;
+import application.model.connectivity.ConnectivityThread;
 import application.model.degree.DegreeCentrality;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ProgressBar;
 
-/// B³¹d przy wpisywaniu z³ego startu i koñca !!!!
 public class Algorithms {
 	
-	private Driver Neo4jDriver;
-	private String StartNode;
-	private String EndNode;
+	private StopWatch execTime;
+	private ProgressBar progress;
 	
-	public void initAStar(String StartNode, String EndNode, Driver Neo4jDriver) {
-		this.StartNode = StartNode;
-		this.EndNode = EndNode;
-		this.Neo4jDriver = Neo4jDriver;
+	public Algorithms(ProgressBar progress) {
+		this.progress = progress;
+	}
+	
+	public void setStopWatch(StopWatch execTime) {
+		this.execTime = execTime;
 	}
 
-	public void AStar(){
-		if(StartNode.matches("[0-9]+") && EndNode.matches("[0-9]+")) {
-
-			Boolean startExists = false;
-			Boolean endExists = false;
-			
-			Map<String, Map<String, Double>> heuristic = new HashMap<>();
-			GraphAStar<String> graph = new GraphAStar<>(heuristic);
-			
-			AStar<String> AStar = new AStar<>(
-					Neo4jDriver, 
-					graph, 
-					Integer.parseInt(StartNode), 
-					Integer.parseInt(EndNode));
-
-			for ( Record node : AStar.getNodesList() ){
-				if(StartNode.equals(node.get(0).toString()))
-					startExists = true;
-				if(EndNode.equals(node.get(0).toString()))
-					endExists = true;
-			}
-
-			if(startExists && endExists){
-				
-				AStarThread AStarThread = new AStarThread(
-						AStar.getNodesList(), 
-						AStar.getRelationsList(), 
-						heuristic, 
-						graph, 
-						AStar);
-				
-				AStarThread.setRoute(StartNode,EndNode);
-				
-				Thread Start_A_star = new Thread(AStarThread);
+	public void AStar(Driver neo4jDriver, String startNode, String endNode, String distanceKey) throws InterruptedException{
+		if(startNode.matches("[0-9]+") && endNode.matches("[0-9]+")) {
+			final int startId = Integer.parseInt(startNode);
+			final int endId = Integer.parseInt(endNode);
+			AStarThread aStarThread = new AStarThread(neo4jDriver, startId, endId, distanceKey, progress);
+			if(aStarThread.startExists() && aStarThread.endExists()) {
+				Thread Start_A_star = new Thread(aStarThread);
 				Start_A_star.start();
+				Start_A_star.join();
+				afterAlg(execTime,"A*");
 			}
 			else
-				aStarMessage(startExists, endExists, false);
-		}
-		else {
+				aStarMessage(aStarThread.startExists(), aStarThread.endExists(), false);
+		}		
+		else
 			aStarMessage(true, true, true);
-		}
 	}
 	
-	public void betweennessCentrality(Driver Neo4jDriver, boolean isDirected) {
-		BCThread BCDirectedThread = new BCThread(Neo4jDriver,isDirected);
+	public void betweennessCentrality(Driver neo4jDriver, boolean isDirected) {
+		BCThread BCDirectedThread = new BCThread(neo4jDriver,isDirected);
 		BCDirectedThread.start();
 	}
 	
-	public void graphColoring(Driver Neo4jDriver) {
-		GraphColoring graphColoring = new GraphColoring(Neo4jDriver);
+	public void graphColoring(Driver neo4jDriver) {
+		GraphColoring graphColoring = new GraphColoring(neo4jDriver);
 		graphColoring.colourVertices();
 	}
 	
-	public void degreeCentrality(Driver Neo4jDriver, boolean isIndegree, boolean isOutdegree, boolean isBoth) {
+	public void degreeCentrality(Driver neo4jDriver, boolean isIndegree, boolean isOutdegree, boolean isBoth) {
 		if(!isIndegree && !isOutdegree && !isBoth) {
 			degreeCentralityMessage();
 		}
 		if(isIndegree || isOutdegree || isBoth){
-			DegreeCentrality degreeCentrality = new DegreeCentrality(Neo4jDriver, isIndegree, isOutdegree, isBoth);
+			DegreeCentrality degreeCentrality = new DegreeCentrality(neo4jDriver, isIndegree, isOutdegree, isBoth);
 			degreeCentrality.compute();
 		}
 	}
 	
-	public void vertexConnectivity(Driver Neo4jDriver, boolean doEdges) {
-		VCThread VCThread = new VCThread(Neo4jDriver);
+	public void vertexConnectivity(Driver neo4jDriver, boolean doEdges) {
+		ConnectivityThread VCThread = new ConnectivityThread(neo4jDriver);
 		VCThread.compute(doEdges);
 	}
 	
@@ -124,6 +98,27 @@ public class Algorithms {
 		alert.setTitle("B³¹d!");
 		alert.setHeaderText(null);
 		alert.setContentText("Nale¿y zaznaczyæ przynajmniej jeden z warunków.");
+		alert.showAndWait();
+	}
+	
+	private void afterAlg(StopWatch execTime, String algorithmName) {
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		Date date = new Date();
+		
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+		alert.setTitle(algorithmName);
+		alert.setHeaderText("Zakoñczono pracê algorytmu");
+		alert.setContentText(
+						"Algorytm zakoñczy³ dzia³anie po " + 
+						execTime.getTime()/3600000 + " h; " +
+						execTime.getTime()/60000 + " m; " +
+						execTime.getTime()/1000 + " s; " +
+						execTime.getTime()%1000 + " ms;" + "\n\n" +
+						"Plik z informacjami na temat wyników algorytmu " +
+						"zosta³ zapisany w folderze AlgResults wewn¹trz folderu " +
+						"bazy danych.\n\n" +
+						"Nazwa pliku : " + algorithmName +
+						"(" + dateFormat.format(date) + ")" + ".txt");
 		alert.showAndWait();
 	}
 }

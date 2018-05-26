@@ -1,101 +1,68 @@
 package application.model.astar;
 
-import org.neo4j.driver.v1.Driver;
-import org.neo4j.driver.v1.Record;
-import org.neo4j.driver.v1.Session;
-import org.neo4j.driver.v1.Transaction;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Set;
 
-import java.util.*;
+public class AStar{
 
-public class AStar<T>{
-
-	private Driver driver;
-    private GraphAStar<T> graph;
-    private static int StartId;
-    private static int EndId;
+    private GraphAStar graph;
 	
-	public AStar(Driver driver, GraphAStar<T> graph, int StartId, int EndId) {
-		this.driver = driver;
+	public AStar(GraphAStar graph) {
 		this.graph = graph;
-		AStar.StartId = StartId;
-		AStar.EndId = EndId;
-	}
+	} 
 
-    public class NodeComparator implements Comparator<NodeData<T>> {
-        public int compare(NodeData<T> nodeFirst, NodeData<T> nodeSecond) {
-            return Double.compare(nodeFirst.F(), nodeSecond.F());
-        }
-    }
-
-    public Record getGraphSize(){
-        try ( Session session = driver.session() ) {
-            return session.readTransaction(AStar::getSize);
-        }
-    }
-
-    public List<Record> getNodesList(){
-        try ( Session session = driver.session() ) {
-            return session.readTransaction(AStar::getNodes);
-        }
-    }
-
-    public List<Record> getRelationsList(){
-        try ( Session session = driver.session() ) {
-            return session.readTransaction(AStar::getRelations);
-        }
-    }
-
-    List<T> astar(T start, T end) {
+    List<Integer> astar(int start, int end) {
     	//Java docs
     	//Creates a PriorityQueue with the default initial capacity (11),
     	//that orders its elements according to their natural ordering
-        final Queue<NodeData<T>> openQueue = new PriorityQueue<>(11, new NodeComparator());
+        final Queue<NodeAStar> openQueue = new PriorityQueue<>(11, new NodeComparator());
 
-        NodeData<T> sourceNodeData = graph.getNodeData(start);
+        NodeAStar sourceNodeData = graph.getNodeData(start);
         sourceNodeData.setG(0);
         sourceNodeData.calcF(end);
         openQueue.add(sourceNodeData);
 
-        final Map<T, T> path = new HashMap<>();
-        final Set<NodeData<T>> closedList = new HashSet<>();
-
+        final Map<Integer, Integer> path = new HashMap<>();
+        final Set<NodeAStar> closedList = new HashSet<>();
         while (!openQueue.isEmpty()) {
-            final NodeData<T> nodeData = openQueue.poll();
-
-            if (nodeData.getNodeId().equals(end)) {
+            final NodeAStar nodeData = openQueue.poll();
+            if (nodeData.id() == end) {
                 return path(path, end);
             }
-
+            
             closedList.add(nodeData);
+            graph.edgesFrom(nodeData.id()).forEach((node,distance) -> {
+            	NodeAStar neighbor = graph.getNodeData(node);
 
-            for (Map.Entry<NodeData<T>, Double> neighborEntry : graph.edgesFrom(nodeData.getNodeId()).entrySet()) {
-                NodeData<T> neighbor = neighborEntry.getKey();
-
-                if (closedList.contains(neighbor)) continue;
-
-                double distanceBetweenTwoNodes = neighborEntry.getValue();
+                double distanceBetweenTwoNodes = distance;
                 double tentativeG = distanceBetweenTwoNodes + nodeData.G();
 
                 if (tentativeG < neighbor.G()) {
                     neighbor.setG(tentativeG);
                     neighbor.calcF(end);
-
-                    path.put(neighbor.getNodeId(), nodeData.getNodeId());
+ 
+                    path.put(neighbor.id(), nodeData.id());
                     if (!openQueue.contains(neighbor)) {
                         openQueue.add(neighbor);
                     }
                 }
-            }
+    		});
         }
 
         return null;
     }
 
-    private List<T> path(Map<T, T> path, T destination) {
+    private List<Integer> path(Map<Integer, Integer> path, int destination) {
         assert path != null;
-        assert destination != null;
 
-        final List<T> pathList = new ArrayList<>();
+        final List<Integer> pathList = new ArrayList<>();
         pathList.add(destination);
         while (path.containsKey(destination)) {
             destination = path.get(destination);
@@ -103,68 +70,5 @@ public class AStar<T>{
         }
         Collections.reverse(pathList);
         return pathList;
-    }
-
-    private static List<Record> getRelations(Transaction tx)
-    {
-        List<Record> result;
-        List<Record> finalResult;
-        int index = 1;
-        int prevSize = 0;
-
-        String matchExpand = "(n0)-[r0]->(n)-[r]->(p)";
-
-        finalResult = tx.run("MATCH (n)-[r]->(p) WHERE ID(n)="
-                + StartId + " RETURN distinct ID(n),ID(r),ID(p)").list();
-
-        while (finalResult.size() != prevSize){
-            prevSize = finalResult.size();
-
-            result = tx.run("MATCH" + matchExpand + " WHERE ID(n0)="
-                    + StartId + " RETURN distinct ID(n),ID(r),ID(p)").list();
-
-            for (Record aResult1 : result) {
-                if (!finalResult.contains(aResult1)) {
-                    finalResult.add(aResult1);
-                }
-            }
-
-            matchExpand = matchExpand.substring(0,matchExpand.length()-12);
-            matchExpand += "(p" + index + ")-[r" + index + "]->(n)-[r]->(p)";
-            index++;
-        }
-
-        return finalResult;
-    }
-
-    private static List<Record> getNodes(Transaction tx){
-        List<Record> result;
-        List<Record> finalResult;
-
-        int prevSize = 0;
-        String matchExpand = "-[]->(n)";
-        int index = 1;
-        finalResult = tx.run("MATCH (n) WHERE ID(n)=" + StartId + " OR ID(n)=" + EndId + " RETURN ID(n)").list();
-        while(finalResult.size() != prevSize) {
-            prevSize = finalResult.size();
-
-            result = tx.run("MATCH (a0)" + matchExpand + "WHERE ID(a0)=" + StartId +
-                    " RETURN distinct ID(n)").list();
-
-            for (Record aResult1 : result) {
-                if (!finalResult.contains(aResult1)) {
-                    finalResult.add(aResult1);
-
-                }
-            }
-            index++;
-            matchExpand = matchExpand.substring(0, matchExpand.length() - 8);
-            matchExpand += "-[]->(a" + index + ")" + "-[]->(n)";
-        }
-        return finalResult;
-    }
-
-    private static Record getSize(Transaction tx){
-        return tx.run("start n=node(*) match (n) return count(n)").list().get(0);
     }
 }

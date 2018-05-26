@@ -9,34 +9,31 @@ import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.Transaction;
 
-import application.model.Node;
-
 public class DegreeCentrality {
 
 	private boolean isIndegree;
 	private boolean isOutdegree;
 	private boolean isBoth;
-	private Driver driver;
+	private Driver neo4jdriver;
 	
-	private ArrayList<Node> Nodes;
+	private ArrayList<NodeDegree> Nodes;
 	private ArrayList<String> SaveParameters;
 	
-	public DegreeCentrality(Driver driver, boolean isIndegree, boolean isOutdegree, boolean isBoth) {
-		this.driver = driver;
+	public DegreeCentrality(Driver neo4jdriver, boolean isIndegree, boolean isOutdegree, boolean isBoth) {
+		this.neo4jdriver = neo4jdriver;
 		this.isIndegree = isIndegree;
 		this.isOutdegree = isOutdegree;
 		this.isBoth = isBoth;
-		Nodes = new ArrayList<Node>();
+		Nodes = new ArrayList<NodeDegree>();
 		SaveParameters = new ArrayList<String>();
 	}
 	
 	public void compute() {
 		for(Record record : getNodesList()) {
-			Node node = new Node(Integer.parseInt(record.get(0).toString()));
-			node.degreeCentrality();
+			NodeDegree node = new NodeDegree(record.get(0).asInt());
 			Nodes.add(node);
 		}
-		for(Node node : Nodes) {
+		for(NodeDegree node : Nodes) {
 			node.setIndegree(getRelationsInCount(node.id()));
 			node.setOutdegree(getRelationsOutCount(node.id()));
 		}
@@ -49,8 +46,8 @@ public class DegreeCentrality {
 		if(isBoth)
 			SaveParameters.add("Degree");
 		
-		Transaction transaction = driver.session().beginTransaction();
-		for(Node node : Nodes) {
+		Transaction transaction = neo4jdriver.session().beginTransaction();
+		for(NodeDegree node : Nodes) {
 			for(String saveParameter : SaveParameters) {
 				insertNodeCentrality(transaction, node, saveParameter);
 			}
@@ -60,20 +57,20 @@ public class DegreeCentrality {
 	}
 	
 	private List<Record> getNodesList(){
-		try ( Session session = driver.session() ) {
+		try ( Session session = neo4jdriver.session() ) {
 			return session.readTransaction(DegreeCentrality::getNodes);
 	    }
 	}
 
 	private int getRelationsOutCount(long node){
-		try ( Session session = driver.session() ) {
+		try ( Session session = neo4jdriver.session() ) {
 	       Transaction tx = session.beginTransaction();
 	       return Integer.parseInt(getRelationsOut(tx,node).get(0).toString());
 	    }
 	}
 	
 	private int getRelationsInCount(long node){
-		try ( Session session = driver.session() ) {
+		try ( Session session = neo4jdriver.session() ) {
 	       Transaction tx = session.beginTransaction();
 	       return Integer.parseInt(getRelationsIn(tx,node).get(0).toString());
 	    }
@@ -91,7 +88,7 @@ public class DegreeCentrality {
 		return tx.run("MATCH (n) RETURN ID(n) LIMIT 25").list();
 	}
 	
-	private StatementResult insertNodeCentrality(Transaction tx, Node node, String saveParameter) {
+	private StatementResult insertNodeCentrality(Transaction tx, NodeDegree node, String saveParameter) {
 		if(saveParameter.equals("Indegree"))
 			return tx.run("MATCH (n) WHERE ID(n) = " + node.id() + " SET n." + saveParameter + " = " + node.indegree());
 		if(saveParameter.equals("Outdegree"))

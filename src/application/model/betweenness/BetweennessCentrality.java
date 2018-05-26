@@ -2,20 +2,22 @@ package application.model.betweenness;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 
-import application.model.Node;
+import application.model.Relation;
 
 public class BetweennessCentrality {
 
 	protected static double INFINITY = 1000000.0; 
 	private Progress progress;
+	private float prog = 0; 
 	
 	private int graphSize;
 	
-	private ArrayList<Node> Nodes;
+	private HashMap<Integer,NodeBtwns> Nodes;
 	private ArrayList<Relation> Relations;
 	
 	public BetweennessCentrality(int graphSize) {
@@ -26,7 +28,7 @@ public class BetweennessCentrality {
 		this.progress = progress; 
 	} 
 	 
-	public void init(ArrayList<Node> Nodes, ArrayList<Relation> Relations) { 
+	public void init(HashMap<Integer,NodeBtwns> Nodes, ArrayList<Relation> Relations) { 
 		this.Nodes = Nodes; 
 		this.Relations = Relations;
 	}
@@ -37,20 +39,18 @@ public class BetweennessCentrality {
 		}
 	} 
 	
-	public void betweennessCentrality(ArrayList<Node> Nodes, ArrayList<Relation> Relations) { 
+	public void betweennessCentrality(HashMap<Integer,NodeBtwns> Nodes, ArrayList<Relation> Relations) { 
 		initAllNodes(Nodes); 
-	 
-		float prog = 0; 
-	 
-		for (Node node : Nodes) {
-			PriorityQueue<Node> SimpleExploreResult = null; 
-	 
+
+		Nodes.forEach((id,node) -> {
+			PriorityQueue<NodeBtwns> SimpleExploreResult = null;
+			
 			SimpleExploreResult = simpleExplore(node, Nodes); 
-				
+			
 			while (!SimpleExploreResult.isEmpty()) {
-				Node nodeOfS = SimpleExploreResult.poll();
+				NodeBtwns nodeOfS = SimpleExploreResult.poll();
 	
-				for (Node nodeOfSPredecessor : nodeOfS.predecessors()) {
+				for (NodeBtwns nodeOfSPredecessor : nodeOfS.predecessors()) {
 					double deltaAdd = ((nodeOfSPredecessor.sigma() / nodeOfS.sigma()) * (1.0 + nodeOfS.delta()));
 					nodeOfSPredecessor.setDelta(nodeOfSPredecessor.delta() + deltaAdd);
 				}
@@ -62,12 +62,12 @@ public class BetweennessCentrality {
 			if (progress != null) 
 				progress.progress(prog / graphSize); 
 			prog++; 
-		} 
+		});
 	} 
 	
-	private PriorityQueue<Node> simpleExplore(Node source, ArrayList<Node> Nodes) { 
-		LinkedList<Node> Q = new LinkedList<Node>(); 
-		PriorityQueue<Node> S = new PriorityQueue<Node>(graphSize, new BrandesNodeComparatorLargerFirst()); 
+	private PriorityQueue<NodeBtwns> simpleExplore(NodeBtwns source, HashMap<Integer,NodeBtwns> Nodes) { 
+		LinkedList<NodeBtwns> Q = new LinkedList<NodeBtwns>(); 
+		PriorityQueue<NodeBtwns> S = new PriorityQueue<NodeBtwns>(graphSize, new BrandesNodeComparatorLargerFirst()); 
 	 
 		Nodes = setupAllNodes(Nodes); 
 		source.setSigma(1.0);
@@ -75,17 +75,17 @@ public class BetweennessCentrality {
 		Q.add(source); 
 	 
 		while (!Q.isEmpty()) { 
-			Node nodeFrom = Q.removeFirst(); 	 
+			NodeBtwns nodeFrom = Q.removeFirst(); 	 
 			S.add(nodeFrom); 
 			
 			ArrayList<Relation> Related = new ArrayList<Relation>();
 			for(Relation relation : Relations) {
-				if(relation.fromID() == nodeFrom.id())
+				if(relation.nodeFrom() == nodeFrom.id())
 					Related.add(relation);
 			}
 	   
 			for(Relation relation : Related) { 
-				Node nodeTo = Nodes.get(getNode(relation.toID()));
+				NodeBtwns nodeTo = Nodes.get(relation.nodeTo());
 	 
 				if (nodeTo.distance() == INFINITY) { 
 					nodeTo.setDistance(nodeFrom.distance()+1);
@@ -99,44 +99,32 @@ public class BetweennessCentrality {
 		}
 		return S; 
 	}
-	
-	private int getNode(long ID) {
-		int index = 0;
-		for(Node n : Nodes) {
-			if(n.id() == ID)
-				return index;
-			index++;
-		}
-		return -1;		 
-	}
 	  
-	private void addToPredecessorsOf(Node node, Node predecessor) { 
+	private void addToPredecessorsOf(NodeBtwns node, NodeBtwns predecessor) { 
 		node.predecessors().add(predecessor);
 	} 
 		 
-	private void clearPredecessorsOf(Node node) { 
-		HashSet<Node> set = new HashSet<Node>(); 
+	private void clearPredecessorsOf(NodeBtwns node) { 
+		HashSet<NodeBtwns> set = new HashSet<NodeBtwns>(); 
 		node.setPredecessors(set);
 	} 
 		 
-	private void initAllNodes(ArrayList<Node> Nodes) { 
-		for (Node node : Nodes) { 
-			node.setCentrality(0.0);
-		} 
+	private void initAllNodes(HashMap<Integer,NodeBtwns> Nodes) { 
+		Nodes.forEach((id,node) -> node.setCentrality(0.0)); 
 	} 
 
-	private ArrayList<Node> setupAllNodes(ArrayList<Node> Nodes) { 
-		for (Node node : Nodes) { 
+	private HashMap<Integer,NodeBtwns> setupAllNodes(HashMap<Integer,NodeBtwns> Nodes) { 
+		Nodes.forEach((id,node) -> {
 			node.setDistance(INFINITY);
 			node.setDelta(0);
 			node.setSigma(0);
-			clearPredecessorsOf(node); 
-		} 
+			clearPredecessorsOf(node);
+		});
 		return Nodes;
 	} 
 		 
-	private class BrandesNodeComparatorLargerFirst implements Comparator<Node> { 
-		public int compare(Node x, Node y) { 
+	private class BrandesNodeComparatorLargerFirst implements Comparator<NodeBtwns> { 
+		public int compare(NodeBtwns x, NodeBtwns y) { 
 			if (x.distance() > y.distance()) 
 				return -1; 
 			else if (x.distance() < y.distance()) 
