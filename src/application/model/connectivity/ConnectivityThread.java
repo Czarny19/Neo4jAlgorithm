@@ -9,15 +9,23 @@ import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.Transaction;
 
-public class ConnectivityThread {
+import application.model.FileCreator;
+
+public class ConnectivityThread implements Runnable{
 	
 	private final Driver neo4jdriver;
 	
 	private HashMap<Integer,NodeConn> Nodes;
 	private HashMap<String,RelationConn> Relations;
+	
+	private boolean doEdges;
+	private boolean doNodes;
 
-	public ConnectivityThread(Driver neo4jdriver) {
+	public ConnectivityThread(Driver neo4jdriver, boolean doNodes, boolean doEdges) {
 		this.neo4jdriver = neo4jdriver;
+		this.doNodes = doNodes;
+		this.doEdges = doEdges;
+		
 		Nodes = new HashMap<Integer,NodeConn>();
 		Relations = new HashMap<String,RelationConn>();
 	}
@@ -31,36 +39,31 @@ public class ConnectivityThread {
 	
 	private void initRelations() {
 		for(Record record : getRelationsList()) {
-			int nodeFrom = record.get(1).asInt();
-			int nodeTo = record.get(2).asInt();
-			Nodes.get(nodeFrom).adj().add(Nodes.get(nodeTo));
-		}
-	}
-	
-	private void initRelationsdoEdges() {
-		for(Record record : getRelationsList()) {
 			int id = record.get(0).asInt();
 			int nodeFrom = record.get(1).asInt();
 			int nodeTo = record.get(2).asInt();
 			Nodes.get(nodeFrom).adj().add(Nodes.get(nodeTo));
-			Nodes.get(nodeTo).adj().add(Nodes.get(nodeFrom));
-			RelationConn relation = new RelationConn(id,nodeFrom,nodeTo);
-			Relations.put(nodeFrom + " " + nodeTo, relation);
+			if(doEdges) {
+				Nodes.get(nodeTo).adj().add(Nodes.get(nodeFrom));
+				RelationConn relation = new RelationConn(id,nodeFrom,nodeTo);
+				Relations.put(nodeFrom + " " + nodeTo, relation);
+			}
 		}
 	}
 	
-	public void compute(boolean doEdges) {
+	public void algExecToFile(FileCreator algInfo) {
+    	algInfo.addLine("test");
+    }
+	
+	@Override
+	public void run() {
 		initNodes();
-		if(doEdges) {
-			initRelationsdoEdges();
-		}
-		if(!doEdges) {
-			initRelations();
-		}		
+		initRelations();
+		
 	    Connectivity connectivity = new Connectivity(Nodes);
-	    connectivity.compute(Nodes, doEdges);
+	    connectivity.compute(Nodes, doNodes, doEdges);
 	    Transaction transaction = neo4jdriver.session().beginTransaction();
-	    if(!doEdges) {	
+	    if(doNodes) {	
 	    	Nodes.forEach((id,node) -> {				    		
 			    insertNodeCut(transaction,id,node.isArticulationPoint());
 	    	});

@@ -23,16 +23,19 @@ class AlgorithmTest {
 
 	@Test
 	void test() {
-		DegreeCentrality DC = new DegreeCentrality(Neo4jConnTest.getDriver(),true,true,false);
-		DC.compute();
+		DegreeCentrality DC = new DegreeCentrality(Neo4jConnTest.driver(),true,true,false);
+		Thread DC_Thread = new Thread(DC);
+		DC_Thread.start();
 		
-		GraphColoring GC = new GraphColoring(Neo4jConnTest.getDriver());
-		GC.colourVertices();
+		GraphColoring GC = new GraphColoring(Neo4jConnTest.driver());
+		Thread GC_Thread = new Thread(GC);
+		GC_Thread.start();
 	}
 	
 	@AfterEach
 	void changeConditions() throws Exception {
-		DegreeCentrality DC = new DegreeCentrality(Neo4jConnTest.getDriver(),true,true,true);
-		DC.compute();
+		DegreeCentrality DC = new DegreeCentrality(Neo4jConnTest.driver(),true,true,false);
+		Thread DC_Thread = new Thread(DC);
+		DC_Thread.start();
 	}
 }

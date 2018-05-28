@@ -10,12 +10,17 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 
+import javafx.scene.control.ProgressBar;
+
 public class AStar{
 
     private GraphAStar graph;
+    
+    private ProgressBar progress;
 	
-	public AStar(GraphAStar graph) {
+	public AStar(GraphAStar graph, ProgressBar progress) {
 		this.graph = graph;
+		this.progress = progress;
 	} 
 
     List<Integer> astar(int start, int end) {
@@ -34,6 +39,7 @@ public class AStar{
         while (!openQueue.isEmpty()) {
             final NodeAStar nodeData = openQueue.poll();
             if (nodeData.id() == end) {
+            	progress.setProgress(1);
                 return path(path, end);
             }
             

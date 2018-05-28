@@ -17,8 +17,8 @@ public class Connectivity {
 	    }	    
 	}
 	
-	public void compute(HashMap<Integer,NodeConn> Nodes, boolean doEdges) {
-		if(!doEdges)
+	public void compute(HashMap<Integer,NodeConn> Nodes, boolean doNodes, boolean doEdges) {
+		if(doNodes)
 			for(NodeConn node : Nodes.values())
 		    	if(node.pre() == -1)
 		    		dfsNodes(node, node);
@@ -28,6 +28,7 @@ public class Connectivity {
 		    		dfsEdges(node, node);
 	}
 	
+	// TODO po³¹czyæ w jedno
 	private void dfsEdges(NodeConn nodeFrom, NodeConn nodeTo) {
 		nodeTo.setPre(count++);
 		nodeTo.setLow(nodeTo.pre());

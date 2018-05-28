@@ -8,11 +8,11 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 import org.apache.commons.lang.time.StopWatch;
-import org.neo4j.driver.v1.Record;
-import org.neo4j.driver.v1.Transaction;
 
 import application.model.Algorithms;
+import application.model.FileCreator;
 import application.model.Neo4jConnection;
+import application.model.PropertyHelper;
 import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -70,6 +70,8 @@ public class Menu implements Initializable{
 	@FXML
 	private TextField DistanceKeyPrompt;
 	@FXML
+	private TextField KeysLoadingPrompt;
+	@FXML
 	private ChoiceBox<String> DistanceKey;
 	
 	private static Neo4jConnection Neo4jConnection;
@@ -84,6 +86,7 @@ public class Menu implements Initializable{
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {	
 		DistanceKeyPrompt.setVisible(false);
+		KeysLoadingPrompt.setVisible(false);
 		AlgorithmProgress.setVisible(false);
 		AlgorithmChooser.setVisible(false);
 		AlgorithmStatus.setVisible(false);		
@@ -101,6 +104,7 @@ public class Menu implements Initializable{
 		statusTextInit();
 
 		ConnectionStatus.setText(statusText.get(0));
+		AlgorithmProgress.setStyle("-fx-accent: forestgreen;\r\n");
 
 		ObservableList<String> ChoiceBoxItems = FXCollections.observableArrayList(
 				"A*",
@@ -111,9 +115,12 @@ public class Menu implements Initializable{
 				"Vertex connectivity");
 		AlgorithmChooser.setItems(ChoiceBoxItems);
 		
+		
+		DistanceKeyPrompt.setBackground(Background.EMPTY);		
+		KeysLoadingPrompt.setBackground(Background.EMPTY);
+		AlgorithmStatus.setBackground(Background.EMPTY);
 		AlgorithmText.setBackground(Background.EMPTY);
 		PortPrompt.setBackground(Background.EMPTY);
-		DistanceKeyPrompt.setBackground(Background.EMPTY);
 
 		ConnectionStatus.setEditable(false);
 		PortPrompt.setEditable(false);
@@ -194,7 +201,10 @@ public class Menu implements Initializable{
 		BrowseForDB.setDisable(false);
 		
 		AlgorithmChooser.setVisible(false);
+		
+		DistanceKeyPrompt.setVisible(false);
 		AlgorithmText.setVisible(false);
+		DistanceKey.setVisible(false);
 		StartNode.setVisible(false);
 		EndNode.setVisible(false);
 		Start.setVisible(false);	
@@ -307,10 +317,44 @@ public class Menu implements Initializable{
 				StartNode.setVisible(true);
 				EndNode.setVisible(true);
 				DistanceKeyPrompt.setVisible(true);
+				KeysLoadingPrompt.setVisible(true);
+								
 				ObservableList<String> obsItems = FXCollections.observableArrayList();
-				obsItems.addAll(getRelationKeys(Neo4jConnection.getDriver().session().beginTransaction()));
-				DistanceKey.setItems(obsItems);
-				DistanceKey.setVisible(true);
+				obsItems.add("Brak klucza");
+				
+				Runnable setAvailableKeys = () -> {
+					PropertyHelper propertiesHelper;
+					Thread findProperty;
+					
+					try(org.neo4j.graphdb.Transaction t = Neo4jConnection.graphDb().beginTx()) {
+						for(String property : Neo4jConnection.graphDb().getAllPropertyKeys()) {
+							
+							propertiesHelper = new PropertyHelper(Neo4jConnection.driver().session());
+							propertiesHelper.setKey(property);
+							
+							findProperty = new Thread(propertiesHelper);
+							findProperty.start();
+							findProperty.join(100);
+							
+							if(propertiesHelper.isFound()) {
+								obsItems.add(property);
+							}
+							else if (!propertiesHelper.isFound()){
+								propertiesHelper.closeTransaction();
+							}
+						}
+						t.success();
+						t.close();
+				    } catch (Exception e) {
+						e.printStackTrace();
+				    }	
+					DistanceKey.setItems(obsItems);
+					
+					KeysLoadingPrompt.setVisible(false);
+					DistanceKey.setVisible(true);
+				};
+				Thread setKeysThread = new Thread(setAvailableKeys);
+				setKeysThread.start();				
 			}
 			if(Objects.equals(newValue, "Degree centrality")) {
 				isOption1.setText("Relacje wchodz¹ce");
@@ -331,51 +375,39 @@ public class Menu implements Initializable{
 
 	@FXML
 	private void startAlgorithm() throws InterruptedException {	
-		AlgorithmProgress.setVisible(true);
-		Algorithms algorithms = new Algorithms(AlgorithmProgress);
+		
+		AlgorithmProgress.setProgress(0);
+		FileCreator algInfo = new FileCreator(Neo4jConnection.pathToDB());
+		
+		Algorithms algorithms = new Algorithms(AlgorithmProgress, AlgorithmStatus, algInfo);
 		stopWatch.reset();
 		stopWatch.start();
 		algorithms.setStopWatch(stopWatch);
-		if(AlgorithmChooser.getSelectionModel().getSelectedItem().equals("A*")) {
+		if(AlgorithmChooser.getSelectionModel().getSelectedItem().equals("A*")) {			
 			algorithms.AStar(
-					Neo4jConnection.getDriver(),
+					Neo4jConnection.driver(),
 					StartNode.getText(),
 					EndNode.getText(),
 					DistanceKey.getSelectionModel().getSelectedItem());
 		}
 		if(AlgorithmChooser.getSelectionModel().getSelectedItem().equals("Betweenness centrality (Relacje skierowane)"))
-			algorithms.betweennessCentrality(Neo4jConnection.getDriver(),true);
+			algorithms.betweennessCentrality(Neo4jConnection.driver(),true);
 		if(AlgorithmChooser.getSelectionModel().getSelectedItem().equals("Betweenness centrality (Relacje nieskierowane)"))
-			algorithms.betweennessCentrality(Neo4jConnection.getDriver(),false);
+			algorithms.betweennessCentrality(Neo4jConnection.driver(),false);
 		if(AlgorithmChooser.getSelectionModel().getSelectedItem().equals("Kolorowanie grafu"))
-			algorithms.graphColoring(Neo4jConnection.getDriver());
+			algorithms.graphColoring(Neo4jConnection.driver());
 		if(AlgorithmChooser.getSelectionModel().getSelectedItem().equals("Degree centrality")) {
 			algorithms.degreeCentrality(
-					Neo4jConnection.getDriver(),
+					Neo4jConnection.driver(),
 					isOption1.isSelected(),
 					isOption2.isSelected(),
 					isOption3.isSelected());
 		}
 		if(AlgorithmChooser.getSelectionModel().getSelectedItem().equals("Vertex connectivity")) {
-			if(isOption1.isSelected())
-				algorithms.vertexConnectivity(Neo4jConnection.getDriver(),false);
-			if(isOption2.isSelected())
-				algorithms.vertexConnectivity(Neo4jConnection.getDriver(),true);
+			algorithms.vertexConnectivity(
+					Neo4jConnection.driver(),
+					isOption1.isSelected(), 
+					isOption2.isSelected());
 		}
-	}
-	
-	private static ArrayList<String> getRelationKeys(Transaction tx){
-		ArrayList<String> RelationKeys = new ArrayList<String>();
-		int index;
-		for(Record records : tx.run("match (a)-[b]->(c) return distinct keys(b)").list()) {
-			index = 0;
-			while(records.get(0).get(index).asString() != "null") {			
-				if(!RelationKeys.contains(records.get(0).get(index).asString())) {
-					RelationKeys.add(records.get(0).get(index).asString());
-				}
-				index++;
-			}
-		}
-		return RelationKeys;
 	}
 }

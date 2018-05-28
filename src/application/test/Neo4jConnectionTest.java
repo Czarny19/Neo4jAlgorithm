@@ -20,7 +20,7 @@ class Neo4jConnectionTest {
 
 	@Test
 	void executeQueryAfterDBConnection() {
-		Neo4jConnTest.getDriver().session().beginTransaction().run("match (a)-[r]->(b) where ID(a)=1 return r");
+		Neo4jConnTest.driver().session().beginTransaction().run("match (a)-[r]->(b) where ID(a)=1 return r");
 	}
 
 }

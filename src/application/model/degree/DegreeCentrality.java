@@ -9,7 +9,9 @@ import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.Transaction;
 
-public class DegreeCentrality {
+import application.model.FileCreator;
+
+public class DegreeCentrality implements Runnable{
 
 	private boolean isIndegree;
 	private boolean isOutdegree;
@@ -28,7 +30,8 @@ public class DegreeCentrality {
 		SaveParameters = new ArrayList<String>();
 	}
 	
-	public void compute() {
+	@Override
+	public void run() {
 		for(Record record : getNodesList()) {
 			NodeDegree node = new NodeDegree(record.get(0).asInt());
 			Nodes.add(node);
@@ -55,6 +58,10 @@ public class DegreeCentrality {
 		transaction.success();
 		transaction.close();
 	}
+	
+	public void algExecToFile(FileCreator algInfo) {
+    	algInfo.addLine("test");
+    }
 	
 	private List<Record> getNodesList(){
 		try ( Session session = neo4jdriver.session() ) {

@@ -2,11 +2,14 @@ package application.model;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
+import org.neo4j.driver.v1.Session;
+import org.neo4j.driver.v1.Transaction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.factory.GraphDatabaseSettings;
@@ -33,7 +36,11 @@ public class Neo4jConnection implements Runnable{
 	
 	public void initPath(String path) {
 		DBpath = new File(path);
-		DatabaseCheck = new File(DBpath + "\\neostore.schemastore.db");
+		DatabaseCheck = new File(DBpath + File.separator + "neostore.schemastore.db");
+	}
+	
+	public Path pathToDB() {
+		return DBpath.toPath();
 	}
 	
 	public void initNewPath(String path) {
@@ -65,6 +72,13 @@ public class Neo4jConnection implements Runnable{
 				registerShutdownHook(graphDb);
 									
 				driver = GraphDatabase.driver("bolt://127.0.0.1" + port);
+				
+				try ( Session session = driver.session() ) {
+					Transaction tx = session.beginTransaction();
+		            tx.run("MATCH (n) RETURN n LIMIT 10");
+		            tx.success();
+		            tx.close();
+		        }
 				
 //				PathFinder<WeightedPath> finder = GraphAlgoFactory.dijkstra(
 //				PathExpanders.forTypeAndDirection(  RelationshipType.withName("ZNA"), Direction.BOTH ), "Distance" );
@@ -160,8 +174,12 @@ public class Neo4jConnection implements Runnable{
 		this.ConnectionErr = ConnectionErr;
 	}
 	
-	public Driver getDriver() {
+	public Driver driver() {
 		return driver;
+	}
+	
+	public GraphDatabaseService graphDb() {
+		return graphDb;
 	}
 	
 	private static void registerShutdownHook( final GraphDatabaseService graphDb ){

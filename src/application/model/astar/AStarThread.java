@@ -5,10 +5,13 @@ import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.Transaction;
 
+import application.model.FileCreator;
 import javafx.scene.control.ProgressBar;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AStarThread implements Runnable{
 
@@ -22,6 +25,8 @@ public class AStarThread implements Runnable{
     private int EndId;
     
     private ProgressBar progress;
+    
+    private AStar aStar;
 
     public AStarThread(Driver neo4jdriver, int StartId, int EndId, String distanceKey, ProgressBar progress) {
     	this.neo4jdriver = neo4jdriver;
@@ -58,12 +63,14 @@ public class AStarThread implements Runnable{
     	Relations = new HashMap<String,RelationAStar>();
     	for(Record record : getRelationsList()) {
     		RelationAStar relation;
-    		if(record.get(3).toString() == "NULL") {
+    		if(record.get(3).toString() == "NULL" || distanceKey.equals("Brak klucza")) {
     			relation = new RelationAStar(
         				record.get(1).asInt(),
         				record.get(0).asInt(),
         				record.get(2).asInt(),
-        				1.0);		
+        				1.0);	
+    			if(!Relations.containsKey(relation.nodeFrom()+" "+relation.nodeTo()))
+    				Relations.put(relation.nodeFrom()+" "+relation.nodeTo(),relation);
     		}
     		else {
     			relation = new RelationAStar(
@@ -71,8 +78,15 @@ public class AStarThread implements Runnable{
         				record.get(0).asInt(),
         				record.get(2).asInt(),
         				record.get(3).asDouble());
+    			if(Relations.containsKey(relation.nodeFrom()+" "+relation.nodeTo())) {
+        			if(relation.distance() < Relations.get(relation.nodeFrom()+" "+relation.nodeTo()).distance()) {
+        				Relations.put(relation.nodeFrom()+" "+relation.nodeTo(),relation);   
+        			}
+        		}
+        		else {
+        			Relations.put(relation.nodeFrom()+" "+relation.nodeTo(),relation);
+        		}
     		}
-    		Relations.put(relation.nodeFrom()+" "+relation.nodeTo(),relation);   	
     	}
 
     	return Relations;
@@ -82,25 +96,38 @@ public class AStarThread implements Runnable{
     public void run() {
     	HashMap<Integer, HashMap<Integer, Double>> heuristic = new HashMap<>();	
 		Nodes = initNodes();
+		progress.setProgress(0.2);
 		Relations = initRelations();
+		progress.setProgress(0.4);
 			
 		GraphAStar graph = new GraphAStar();	
 		
-		Nodes.forEach((idFrom,nodeFrom) -> {
+		double localProg = 0;
+		double arraySize = Nodes.size();
+		for (Integer idFrom : Nodes.keySet()) {
 			HashMap<Integer, Double> map = new HashMap<Integer, Double>();
-			Nodes.forEach((idTo,nodeTo) -> {
+			for (Integer idTo : Nodes.keySet()) {
 				if(idFrom == idTo)
 	                map.put(idTo, 0.0);
 				else 
 					map.put(idTo, 1.0);
-			});
+			}
+			localProg += 1;
+			progress.setProgress(progress.getProgress()+(localProg/(arraySize*500)));
 			heuristic.put(idFrom, map);
-		});
+		}
+		
 		graph.setHeuristic(heuristic);
 		
-		Nodes.forEach((id,node) -> {
+		localProg = 0;
+		for (Integer id : Nodes.keySet()) {
 			graph.addNode(id);
-		});	
+			localProg += 1;
+			progress.setProgress(progress.getProgress()+(localProg/(arraySize*500)));
+		}
+		
+		localProg = 0;
+		arraySize = Relations.size();
 		for (RelationAStar relation : Relations.values()) {
 			int nodeFromId = -1;
 			int nodeToId = -1;
@@ -115,16 +142,50 @@ public class AStarThread implements Runnable{
 				if(nodeFromId != -1 && nodeToId != -1)
 					graph.addEdge(nodeFromId, nodeToId, relation.distance());
 			}
+			
+			localProg += 1;
+			progress.setProgress(progress.getProgress()+(localProg/(arraySize*500)));
 		}
 
-		AStar aStar = new AStar(graph);
-		try {
-			for (Integer path : aStar.astar(StartId , EndId)) {	
-				System.out.println("path = " + path);
+		aStar = new AStar(graph, progress);
+    }
+    
+    public void algExecToFile(FileCreator algInfo) {
+    	ArrayList<String> Path = new ArrayList<String>();
+    	
+    	algInfo.addLine("");
+    	algInfo.addLine("ID Wierzcho³ka pocz¹tkowego = " + StartId);
+    	algInfo.addLine("ID wierzcho³ka koñcowego    = " + EndId);
+    	algInfo.addLine("");
+    	algInfo.addLine("Œcie¿ka :");
+    	try {
+    		double distanceSum = 0;
+			for (Integer pathElement : aStar.astar(StartId , EndId)) {	
+				Path.add(pathElement.toString());
 			}
+			for(int i=0 ; i < Path.size()-1 ; i++) {
+				distanceSum += Relations.get(Path.get(i)+" "+Path.get(i+1)).distance();
+			}
+			algInfo.addLine("--- Klucz odleg³oœci    = " + distanceKey);
+			algInfo.addLine("--- Odleg³oœæ ca³kowita = " + distanceSum);
+			Transaction tx = neo4jdriver.session().beginTransaction();
+			
+			for(int i=0 ; i < Path.size() ; i++) {
+				algInfo.addLine("ID: " + Path.get(i) + 
+						"  Wierzcho³ek Info: " + getNodeData(tx,Path.get(i)));
+				if(i != (Path.size()-1)) {
+					int relationId = Relations.get(Path.get(i)+" "+Path.get(i+1)).id();
+					algInfo.addLine("		ID: " + relationId + " Wierzcho³ki relacji: " +  
+							Path.get(i)+" --> "+Path.get(i+1) + 
+							" Relacja Info: " +
+							getRelationData(relationId));
+				}
+			}
+			tx.success();
+			tx.close();
 		}catch (NullPointerException e){
-	        System.out.println("Brak œcie¿ki");
-		}	
+			algInfo.addLine("Brak œcie¿ki");
+		}
     }
 
     public Record getGraphSize(){
@@ -138,6 +199,20 @@ public class AStarThread implements Runnable{
  	       Transaction tx = session.beginTransaction();
  	       return getNode(tx, nodeId);
  	    }
+    }
+    
+    public Map<String, Object> getNodeData(String nodeId) {
+    	try ( Session session = neo4jdriver.session() ) {
+  	       Transaction tx = session.beginTransaction();
+  	       return getNodeData(tx, nodeId);
+  	    }
+    }
+    
+    public Map<String, Object> getRelationData(int relationId) {
+    	try ( Session session = neo4jdriver.session() ) {
+   	       Transaction tx = session.beginTransaction();
+   	       return getRelationData(tx, relationId);
+   	    }
     }
 
     public List<Record> getNodesList(){
@@ -160,6 +235,18 @@ public class AStarThread implements Runnable{
     			"RETURN node").list();
     }
     
+    private static Map<String, Object> getNodeData(Transaction tx, String nodeId) {
+    	return tx.run("MATCH (n) " +
+    			"WHERE ID(n)=" + nodeId + " " +
+    			"RETURN n").single().get(0).asMap();
+    }
+    
+    private static Map<String, Object> getRelationData(Transaction tx, int relationId) {
+    	return tx.run("MATCH ()-[r]->() " +
+    			"WHERE ID(r)=" + relationId + " " +
+    			"RETURN r").single().get(0).asMap();
+    }
+    
     private static List<Record> getRelations(Transaction tx, int StartId, String distanceKey)
     {
         List<Record> result;
@@ -169,14 +256,26 @@ public class AStarThread implements Runnable{
 
         String matchExpand = "(n0)-[r0]->(n)-[r]->(p)";
 
-        finalResult = tx.run("MATCH (n)-[r]->(p) WHERE ID(n)="
-                + StartId + " RETURN distinct ID(n),ID(r),ID(p),r." + distanceKey).list();
+        if(distanceKey.equals("Brak klucza")) {
+        	finalResult = tx.run("MATCH (n)-[r]->(p) WHERE ID(n)="
+                + StartId + " RETURN distinct ID(n),ID(r),ID(p)").list();
+        }
+        else {
+        	finalResult = tx.run("MATCH (n)-[r]->(p) WHERE ID(n)="
+                    + StartId + " RETURN distinct ID(n),ID(r),ID(p),r." + distanceKey).list();
+        }
 
         while (finalResult.size() != prevSize){
             prevSize = finalResult.size();
 
-            result = tx.run("MATCH" + matchExpand + " WHERE ID(n0)="
-                    + StartId + " RETURN distinct ID(n),ID(r),ID(p),r." + distanceKey).list();
+            if(distanceKey.equals("Brak klucza")) {
+            	result = tx.run("MATCH" + matchExpand + " WHERE ID(n0)="
+                    + StartId + " RETURN distinct ID(n),ID(r),ID(p)").list();
+            }
+            else {
+            	result = tx.run("MATCH" + matchExpand + " WHERE ID(n0)="
+                        + StartId + " RETURN distinct ID(n),ID(r),ID(p),r." + distanceKey).list();
+            }
 
             for (Record aResult1 : result) {
                 if (!finalResult.contains(aResult1)) {

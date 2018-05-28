@@ -10,7 +10,9 @@ import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.Transaction;
 
-public class GraphColoring {
+import application.model.FileCreator;
+
+public class GraphColoring implements Runnable{
 
 	private Driver noe4jdriver;
 	private ArrayList<NodeGC> Nodes;
@@ -27,7 +29,8 @@ public class GraphColoring {
 		}	
 	}
 	
-	public void colourVertices(){
+	@Override
+	public void run(){
 		Collections.sort(Nodes, new NodeComparator());
 		for(int i = 0; i < Nodes.size(); i++) {
 			for(int j = 0; j < Nodes.size();) {
@@ -49,6 +52,10 @@ public class GraphColoring {
 		transaction.success();
 		transaction.close();				
 	}
+	
+	public void algExecToFile(FileCreator algInfo) {
+    	algInfo.addLine("test");
+    }
 	
 //	private Record getGraphSize(){
 //        try ( Session session = driver.session() ) {

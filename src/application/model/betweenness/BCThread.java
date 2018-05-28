@@ -10,9 +10,10 @@ import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.Transaction;
 
+import application.model.FileCreator;
 import application.model.Relation;
 
-public class BCThread {
+public class BCThread implements Runnable{
 	
 	private Driver neo4jdriver;
 	private HashMap<Integer,NodeBtwns> Nodes;
@@ -27,7 +28,8 @@ public class BCThread {
 		Relations = new ArrayList<Relation>();		
 	}
 	
-	public void start() {
+	@Override
+	public void run() {
 		initNodes(getNodesList());
 		initRelations(getRelationsList(),isDirected());
 		BetweennessCentrality betweennessCentrality = new BetweennessCentrality(getGraphSize().get(0).asInt()); 
@@ -41,6 +43,10 @@ public class BCThread {
 		transaction.success();
 		transaction.close();
 	}
+	
+	public void algExecToFile(FileCreator algInfo) {
+    	algInfo.addLine("test");
+    }
 	
 	private void initNodes(List<Record> NodesList) {
 		for(Record record : NodesList) {
