@@ -64,6 +64,12 @@ public class Menu implements Initializable{
 	@FXML
 	private CheckBox isOption3;
 	@FXML
+	private CheckBox isFindCuts;
+	@FXML
+	private CheckBox isFindBridges;
+	@FXML
+	private CheckBox isFindBridgesisFindBridges;
+	@FXML
 	private TextField PortInput;
 	@FXML
 	private TextField PortPrompt;
@@ -74,7 +80,7 @@ public class Menu implements Initializable{
 	@FXML
 	private ChoiceBox<String> DistanceKey;
 	
-	private static Neo4jConnection Neo4jConnection;
+	private Neo4jConnection Neo4jConnection;
 	
 	private PauseTransition statusDelay = new PauseTransition(Duration.seconds(0.2));	
 	private ArrayList<String> statusText = new ArrayList<String>();	
@@ -93,6 +99,8 @@ public class Menu implements Initializable{
 		AlgorithmText.setVisible(false);
 		DBDisconnect.setVisible(false);
 		DistanceKey.setVisible(false);
+		isFindCuts.setVisible(false);
+		isFindBridges.setVisible(false);
 		isOption3.setVisible(false);
 		isOption2.setVisible(false);
 		isOption1.setVisible(false);
@@ -112,7 +120,7 @@ public class Menu implements Initializable{
 				"Betweenness centrality (Relacje nieskierowane)",
 				"Kolorowanie grafu",
 				"Degree centrality",
-				"Vertex connectivity");
+				"Connectivity");
 		AlgorithmChooser.setItems(ChoiceBoxItems);
 		
 		
@@ -124,16 +132,25 @@ public class Menu implements Initializable{
 
 		ConnectionStatus.setEditable(false);
 		PortPrompt.setEditable(false);
+		
+//		isFindCuts.selectedProperty().addListener(new ChangeListener<Boolean>() {
+//		    @Override
+//		    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+//		    	isFindBridges.setSelected(!newValue);
+//		    }
+//		});
+//		isFindBridges.selectedProperty().addListener(new ChangeListener<Boolean>() {
+//		    @Override
+//		    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+//		    	isFindCuts.setSelected(!newValue);
+//		    }
+//		});
 	}
 
-	public void initData(Neo4jConnection N4jC) {
-		this.setN4jC(N4jC);
+	public void initNeo4jConnection(Neo4jConnection N4jC) {
+		this.Neo4jConnection = N4jC;
 	}
-	
-	private void setN4jC(Neo4jConnection n4jC) {
-		Neo4jConnection = n4jC;
-	}
-	
+
 	private void statusTextInit() {
 		statusText.add("Status po³¹czenia: Brak po³¹czenia z baz¹");
 		statusText.add("Status po³¹czenia: Nawi¹zywanie po³¹czenia");
@@ -284,8 +301,7 @@ public class Menu implements Initializable{
 	
 	private void dbButtonsOptions(boolean DisconnectVisible, boolean ConnectDisabled) {
 		DBDisconnect.setVisible(DisconnectVisible);
-		DBConnect.setDisable(ConnectDisabled);
-		
+		DBConnect.setDisable(ConnectDisabled);		
 	}
 
 	@FXML
@@ -309,6 +325,9 @@ public class Menu implements Initializable{
 			
 			isOption3.setVisible(false);
 			isOption3.setSelected(false);
+			
+			isFindCuts.setVisible(false);			
+			isFindBridges.setVisible(false);
 			
 			if(!Objects.equals(newValue, "")){
 				Start.setVisible(true);
@@ -364,11 +383,9 @@ public class Menu implements Initializable{
 				isOption2.setVisible(true);
 				isOption3.setVisible(true);
 			}
-			if(Objects.equals(newValue, "Vertex connectivity")) {
-				isOption1.setText("Wyszukiwanie przeciêæ");
-				isOption2.setText("Wyszukiwanie mostów");
-				isOption1.setVisible(true);
-				isOption2.setVisible(true);
+			if(Objects.equals(newValue, "Connectivity")) {
+				isFindCuts.setVisible(true);
+				isFindBridges.setVisible(true);
 			}
         });
 	}
@@ -383,31 +400,44 @@ public class Menu implements Initializable{
 		stopWatch.reset();
 		stopWatch.start();
 		algorithms.setStopWatch(stopWatch);
-		if(AlgorithmChooser.getSelectionModel().getSelectedItem().equals("A*")) {			
-			algorithms.AStar(
-					Neo4jConnection.driver(),
-					StartNode.getText(),
-					EndNode.getText(),
-					DistanceKey.getSelectionModel().getSelectedItem());
-		}
-		if(AlgorithmChooser.getSelectionModel().getSelectedItem().equals("Betweenness centrality (Relacje skierowane)"))
-			algorithms.betweennessCentrality(Neo4jConnection.driver(),true);
-		if(AlgorithmChooser.getSelectionModel().getSelectedItem().equals("Betweenness centrality (Relacje nieskierowane)"))
-			algorithms.betweennessCentrality(Neo4jConnection.driver(),false);
-		if(AlgorithmChooser.getSelectionModel().getSelectedItem().equals("Kolorowanie grafu"))
-			algorithms.graphColoring(Neo4jConnection.driver());
-		if(AlgorithmChooser.getSelectionModel().getSelectedItem().equals("Degree centrality")) {
-			algorithms.degreeCentrality(
-					Neo4jConnection.driver(),
-					isOption1.isSelected(),
-					isOption2.isSelected(),
-					isOption3.isSelected());
-		}
-		if(AlgorithmChooser.getSelectionModel().getSelectedItem().equals("Vertex connectivity")) {
-			algorithms.vertexConnectivity(
-					Neo4jConnection.driver(),
-					isOption1.isSelected(), 
-					isOption2.isSelected());
-		}
+		
+		Thread startThread;
+		Runnable start = () -> {
+			try {
+				if(AlgorithmChooser.getSelectionModel().getSelectedItem().equals("A*")) {	
+					algorithms.AStar(
+						Neo4jConnection.driver(),
+						StartNode.getText(),
+						EndNode.getText(),
+						DistanceKey.getSelectionModel().getSelectedItem());
+				}
+				if(AlgorithmChooser.getSelectionModel().getSelectedItem().equals("Betweenness centrality (Relacje skierowane)")) {
+					algorithms.betweennessCentrality(Neo4jConnection.driver(),true);
+				}
+				if(AlgorithmChooser.getSelectionModel().getSelectedItem().equals("Betweenness centrality (Relacje nieskierowane)")) {
+					algorithms.betweennessCentrality(Neo4jConnection.driver(),false);
+				}
+				if(AlgorithmChooser.getSelectionModel().getSelectedItem().equals("Kolorowanie grafu")) {
+					algorithms.graphColoring(Neo4jConnection.driver());
+				}
+				if(AlgorithmChooser.getSelectionModel().getSelectedItem().equals("Degree centrality")) {
+					algorithms.degreeCentrality(
+						Neo4jConnection.driver(),
+						isOption1.isSelected(),
+						isOption2.isSelected(),
+						isOption3.isSelected());
+				}
+				if(AlgorithmChooser.getSelectionModel().getSelectedItem().equals("Connectivity")) {
+					algorithms.Connectivity(
+						Neo4jConnection.driver(),
+						isFindCuts.isSelected(), 
+						isFindBridges.isSelected());
+				}	
+			}catch(Exception exc) {
+				exc.printStackTrace();
+			}
+		};
+		startThread = new Thread(start);
+		startThread.start();
 	}
 }

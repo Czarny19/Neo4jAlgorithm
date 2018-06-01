@@ -16,8 +16,7 @@ public class FileCreator {
 	private Path DBpath;
 	
 	public FileCreator(Path DBpath) {
-		WriteParams = new ArrayList<String>();
-		
+		WriteParams = new ArrayList<String>();		
 		this.DBpath = DBpath;		
 	}
 	
@@ -26,17 +25,20 @@ public class FileCreator {
 	}
 	
 	public void create() throws IOException {
+		fileToSave.getParentFile().mkdirs();
 		BufferedWriter writer = new BufferedWriter(new FileWriter(fileToSave.getPath()));
 		for(String lineToWrite : WriteParams) {
 			writer.write(lineToWrite);
 			writer.newLine();
-		}
-	     
+		}	     
 	    writer.close();
 	}
 	
 	public void addLine(String line) {
 		WriteParams.add(line);
 	}
-
+	
+	public void addEmptyLine() {
+		WriteParams.add("");
+	}
 }

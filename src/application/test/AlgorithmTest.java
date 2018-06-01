@@ -7,11 +7,15 @@ import org.junit.jupiter.api.Test;
 import application.model.Neo4jConnection;
 import application.model.coloring.GraphColoring;
 import application.model.degree.DegreeCentrality;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextField;
 
 class AlgorithmTest {
 
 	Neo4jConnection Neo4jConnTest = new Neo4jConnection();
 	Thread StartConnection = new Thread(Neo4jConnTest);
+	ProgressBar progressBar = new ProgressBar();
+	TextField progressPrompt = new TextField();
 	
 	@BeforeEach
 	void setUp() throws Exception {
@@ -23,18 +27,18 @@ class AlgorithmTest {
 
 	@Test
 	void test() {
-		DegreeCentrality DC = new DegreeCentrality(Neo4jConnTest.driver(),true,true,false);
+		DegreeCentrality DC = new DegreeCentrality(Neo4jConnTest.driver(),true,true,false,progressBar,progressPrompt);
 		Thread DC_Thread = new Thread(DC);
 		DC_Thread.start();
 		
-		GraphColoring GC = new GraphColoring(Neo4jConnTest.driver());
+		GraphColoring GC = new GraphColoring(Neo4jConnTest.driver(),progressBar,progressPrompt);
 		Thread GC_Thread = new Thread(GC);
 		GC_Thread.start();
 	}
 	
 	@AfterEach
 	void changeConditions() throws Exception {
-		DegreeCentrality DC = new DegreeCentrality(Neo4jConnTest.driver(),true,true,false);
+		DegreeCentrality DC = new DegreeCentrality(Neo4jConnTest.driver(),true,true,false,progressBar,progressPrompt);
 		Thread DC_Thread = new Thread(DC);
 		DC_Thread.start();
 	}

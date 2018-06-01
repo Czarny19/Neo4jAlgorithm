@@ -26,16 +26,17 @@ public class Main extends Application {
         Parent root = LoadingScreen.load();
         Scene loading = new Scene(root);
         loading.getStylesheets().add("/application/resource/Custom.css");
-                
+                   
         Loading = new Stage();
+        Loading.getIcons().add(new Image("application/resource/Icon.png"));
         Loading.initStyle(StageStyle.TRANSPARENT);
-        Loading.setScene(loading);       
+        Loading.setScene(loading);         
         Loading.show();
     	
     	root = Menu.load();
     	
-    	MainStage.setTitle("Neo4j Algorithm");
     	MainStage.getIcons().add(new Image("application/resource/Icon.png"));
+    	MainStage.setTitle("Neo4j Algorithm");    	
     	MainStage.setScene(new Scene(root));
     	MainStage.initStyle(StageStyle.UNIFIED);
     	MainStage.maximizedProperty().addListener((observable, oldValue, newValue) -> {
@@ -45,8 +46,8 @@ public class Main extends Application {
     	
     	Neo4jConnection Neo4jConnection = new Neo4jConnection();
     	
-    	Menu MenuCtr = new Menu();
-    	MenuCtr.initData(Neo4jConnection);
+    	Menu MenuCtr = Menu.getController();
+    	MenuCtr.initNeo4jConnection(Neo4jConnection);
     	  	
         delay.setOnFinished(event -> {
         	Loading.hide();

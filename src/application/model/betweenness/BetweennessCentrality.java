@@ -7,45 +7,50 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 
-import application.model.Relation;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextField;
 
 public class BetweennessCentrality {
 
 	protected static double INFINITY = 1000000.0; 
-	private Progress progress;
-	private float prog = 0; 
 	
-	private int graphSize;
+	private double graphSize;
 	
 	private HashMap<Integer,NodeBtwns> Nodes;
-	private ArrayList<Relation> Relations;
+	private HashMap<Integer,ArrayList<Integer>> Relations;
 	
-	public BetweennessCentrality(int graphSize) {
+	private ProgressBar progress;
+	private TextField progressPrompt;
+	
+	private int computedCount;
+	
+	public BetweennessCentrality(double graphSize, ProgressBar progress, TextField progressPrompt) {
 		this.graphSize = graphSize;
-	} 
-
-	public void registerProgressIndicator(Progress progress) { 
-		this.progress = progress; 
+		this.progress = progress;
+		this.progressPrompt = progressPrompt;
 	} 
 	 
-	public void init(HashMap<Integer,NodeBtwns> Nodes, ArrayList<Relation> Relations) { 
+	public void init(HashMap<Integer,NodeBtwns> Nodes, HashMap<Integer,ArrayList<Integer>> Relations) { 
 		this.Nodes = Nodes; 
 		this.Relations = Relations;
 	}
 	 
 	public void compute() { 
 		if (!Nodes.isEmpty()) { 
-			betweennessCentrality(Nodes, Relations); 
+			betweennessCentrality(); 
 		}
 	} 
 	
-	public void betweennessCentrality(HashMap<Integer,NodeBtwns> Nodes, ArrayList<Relation> Relations) { 
+	public void betweennessCentrality() { 
 		initAllNodes(Nodes); 
+		
+		progressPrompt.setText("Wykonywana operacja: OBLICZANIE");
 
+		computedCount = 0;
 		Nodes.forEach((id,node) -> {
 			PriorityQueue<NodeBtwns> SimpleExploreResult = null;
 			
-			SimpleExploreResult = simpleExplore(node, Nodes); 
+			SimpleExploreResult = simpleExplore(node); 
 			
 			while (!SimpleExploreResult.isEmpty()) {
 				NodeBtwns nodeOfS = SimpleExploreResult.poll();
@@ -58,18 +63,15 @@ public class BetweennessCentrality {
 					nodeOfS.setCentrality(nodeOfS.centrality() + nodeOfS.delta());
 				}
 			}
-			
-			if (progress != null) 
-				progress.progress(prog / graphSize); 
-			prog++; 
+			progress.setProgress(0.4 + (computedCount++/graphSize)/2.5);
 		});
 	} 
 	
-	private PriorityQueue<NodeBtwns> simpleExplore(NodeBtwns source, HashMap<Integer,NodeBtwns> Nodes) { 
+	private PriorityQueue<NodeBtwns> simpleExplore(NodeBtwns source) { 
 		LinkedList<NodeBtwns> Q = new LinkedList<NodeBtwns>(); 
-		PriorityQueue<NodeBtwns> S = new PriorityQueue<NodeBtwns>(graphSize, new BrandesNodeComparatorLargerFirst()); 
+		PriorityQueue<NodeBtwns> S = new PriorityQueue<NodeBtwns>((int)graphSize, new BrandesNodeComparatorLargerFirst()); 
 	 
-		Nodes = setupAllNodes(Nodes); 
+		setupAllNodes(Nodes); 
 		source.setSigma(1.0);
 		source.setDistance(0.0);
 		Q.add(source); 
@@ -77,25 +79,20 @@ public class BetweennessCentrality {
 		while (!Q.isEmpty()) { 
 			NodeBtwns nodeFrom = Q.removeFirst(); 	 
 			S.add(nodeFrom); 
-			
-			ArrayList<Relation> Related = new ArrayList<Relation>();
-			for(Relation relation : Relations) {
-				if(relation.nodeFrom() == nodeFrom.id())
-					Related.add(relation);
+			if(Relations.get(nodeFrom.id()) != null) {
+				for(Integer nodeRelated : Relations.get(nodeFrom.id())) { 
+					NodeBtwns nodeTo = Nodes.get(nodeRelated);
+		 
+					if (nodeTo.distance() == INFINITY) { 
+						nodeTo.setDistance(nodeFrom.distance()+1);
+						Q.add(nodeTo); 
+					} 
+					if (nodeTo.distance() == (nodeFrom.distance()+1)) { 
+						nodeTo.setSigma(nodeTo.sigma() + nodeFrom.sigma());
+						addToPredecessorsOf(nodeTo, nodeFrom);
+					} 
+				} 
 			}
-	   
-			for(Relation relation : Related) { 
-				NodeBtwns nodeTo = Nodes.get(relation.nodeTo());
-	 
-				if (nodeTo.distance() == INFINITY) { 
-					nodeTo.setDistance(nodeFrom.distance()+1);
-					Q.add(nodeTo); 
-				} 
-				if (nodeTo.distance() == (nodeFrom.distance()+1)) { 
-					nodeTo.setSigma(nodeTo.sigma() + nodeFrom.sigma());
-					addToPredecessorsOf(nodeTo, nodeFrom);
-				} 
-			} 
 		}
 		return S; 
 	}

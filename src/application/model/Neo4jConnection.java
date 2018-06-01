@@ -79,14 +79,6 @@ public class Neo4jConnection implements Runnable{
 		            tx.success();
 		            tx.close();
 		        }
-				
-//				PathFinder<WeightedPath> finder = GraphAlgoFactory.dijkstra(
-//				PathExpanders.forTypeAndDirection(  RelationshipType.withName("ZNA"), Direction.BOTH ), "Distance" );
-//
-//				WeightedPath path = finder.findSinglePath( graphDb.getNodeById(6), graphDb.getNodeById(5) );
-//
-//					// Get the weight for the found path
-//				System.out.println(path.weight());	
 
 				isConnected = true;
 			}catch(Exception e) {

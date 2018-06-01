@@ -7,6 +7,7 @@ import org.neo4j.driver.v1.Transaction;
 
 import application.model.FileCreator;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextField;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,15 +26,17 @@ public class AStarThread implements Runnable{
     private int EndId;
     
     private ProgressBar progress;
+    private TextField progressPrompt;
     
     private AStar aStar;
 
-    public AStarThread(Driver neo4jdriver, int StartId, int EndId, String distanceKey, ProgressBar progress) {
+    public AStarThread(Driver neo4jdriver, int StartId, int EndId, String distanceKey, ProgressBar progress, TextField progressPrompt) {
     	this.neo4jdriver = neo4jdriver;
         this.distanceKey = distanceKey;
         this.StartId = StartId;
         this.EndId = EndId;
         this.progress = progress;
+        this.progressPrompt = progressPrompt;
     }
     
     public boolean startExists() {
@@ -96,14 +99,16 @@ public class AStarThread implements Runnable{
     public void run() {
     	HashMap<Integer, HashMap<Integer, Double>> heuristic = new HashMap<>();	
 		Nodes = initNodes();
+		progressPrompt.setText("Wykonywana operacja: WYSZUKIWANIE ŒCIE¯KI");
 		progress.setProgress(0.2);
 		Relations = initRelations();
 		progress.setProgress(0.4);
 			
 		GraphAStar graph = new GraphAStar();	
 		
-		double localProg = 0;
 		double arraySize = Nodes.size();
+		double localProg = 0;
+				
 		for (Integer idFrom : Nodes.keySet()) {
 			HashMap<Integer, Double> map = new HashMap<Integer, Double>();
 			for (Integer idTo : Nodes.keySet()) {
@@ -113,7 +118,7 @@ public class AStarThread implements Runnable{
 					map.put(idTo, 1.0);
 			}
 			localProg += 1;
-			progress.setProgress(progress.getProgress()+(localProg/(arraySize*500)));
+			progress.setProgress((localProg/arraySize)/4);
 			heuristic.put(idFrom, map);
 		}
 		
@@ -123,11 +128,12 @@ public class AStarThread implements Runnable{
 		for (Integer id : Nodes.keySet()) {
 			graph.addNode(id);
 			localProg += 1;
-			progress.setProgress(progress.getProgress()+(localProg/(arraySize*500)));
+			progress.setProgress(0.25+(localProg/arraySize)/4);
 		}
 		
 		localProg = 0;
 		arraySize = Relations.size();
+		
 		for (RelationAStar relation : Relations.values()) {
 			int nodeFromId = -1;
 			int nodeToId = -1;
@@ -144,7 +150,7 @@ public class AStarThread implements Runnable{
 			}
 			
 			localProg += 1;
-			progress.setProgress(progress.getProgress()+(localProg/(arraySize*500)));
+			progress.setProgress(0.5+(localProg/arraySize)/4);
 		}
 
 		aStar = new AStar(graph, progress);
@@ -153,10 +159,10 @@ public class AStarThread implements Runnable{
     public void algExecToFile(FileCreator algInfo) {
     	ArrayList<String> Path = new ArrayList<String>();
     	
-    	algInfo.addLine("");
+    	algInfo.addEmptyLine();
     	algInfo.addLine("ID Wierzcho³ka pocz¹tkowego = " + StartId);
     	algInfo.addLine("ID wierzcho³ka koñcowego    = " + EndId);
-    	algInfo.addLine("");
+    	algInfo.addEmptyLine();
     	algInfo.addLine("Œcie¿ka :");
     	try {
     		double distanceSum = 0;
@@ -168,16 +174,17 @@ public class AStarThread implements Runnable{
 			}
 			algInfo.addLine("--- Klucz odleg³oœci    = " + distanceKey);
 			algInfo.addLine("--- Odleg³oœæ ca³kowita = " + distanceSum);
+			algInfo.addEmptyLine();
 			Transaction tx = neo4jdriver.session().beginTransaction();
 			
 			for(int i=0 ; i < Path.size() ; i++) {
 				algInfo.addLine("ID: " + Path.get(i) + 
-						"  Wierzcho³ek Info: " + getNodeData(tx,Path.get(i)));
+						"	Wierzcho³ek : " + getNodeData(tx,Path.get(i)));
 				if(i != (Path.size()-1)) {
 					int relationId = Relations.get(Path.get(i)+" "+Path.get(i+1)).id();
 					algInfo.addLine("		ID: " + relationId + " Wierzcho³ki relacji: " +  
 							Path.get(i)+" --> "+Path.get(i+1) + 
-							" Relacja Info: " +
+							"	Relacja : " +
 							getRelationData(relationId));
 				}
 			}
