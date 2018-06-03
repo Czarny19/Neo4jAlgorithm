@@ -10,34 +10,34 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.Menu">
-   <Button fx:id="DBConnect" layoutX="12.0" layoutY="57.0" mnemonicParsing="false" onAction="#Connect" prefHeight="36.0" prefWidth="87.0" text="Połącz z bazą" />
-   <TextField fx:id="Path" layoutX="12.0" layoutY="14.0" prefHeight="36.0" prefWidth="520.0" promptText="Wprowadź ścieżkę..." />
-   <ChoiceBox fx:id="AlgorithmChooser" layoutX="173.0" layoutY="123.0" onMouseClicked="#algorithmChosen" prefHeight="36.0" prefWidth="356.0" />
-   <TextField fx:id="AlgorithmText" editable="false" focusTraversable="false" layoutX="12.0" layoutY="123.0" prefHeight="36.0" prefWidth="149.0" text="Wybierz algorytm:">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.MenuController">
+   <Button fx:id="connectToDB" layoutX="12.0" layoutY="57.0" mnemonicParsing="false" onAction="#connect" prefHeight="36.0" prefWidth="87.0" text="Połącz z bazą" />
+   <TextField fx:id="pathToDB" layoutX="12.0" layoutY="14.0" prefHeight="36.0" prefWidth="520.0" promptText="Wprowadź ścieżkę..." />
+   <ChoiceBox fx:id="algorithmChooser" layoutX="173.0" layoutY="123.0" onMouseClicked="#algorithmChosen" prefHeight="36.0" prefWidth="356.0" />
+   <TextField fx:id="algorithmPrompt" editable="false" focusTraversable="false" layoutX="12.0" layoutY="123.0" prefHeight="36.0" prefWidth="149.0" text="Wybierz algorytm:">
       <font>
          <Font size="16.0" />
       </font></TextField>
-   <Button fx:id="Start" layoutX="539.0" layoutY="123.0" mnemonicParsing="false" onAction="#startAlgorithm" prefHeight="36.0" prefWidth="87.0" text="Start" />
-   <ProgressBar fx:id="AlgorithmProgress" focusTraversable="false" layoutX="12.0" layoutY="335.0" prefHeight="18.0" prefWidth="560.0" progress="0.0">
+   <Button fx:id="startAlgorithm" layoutX="539.0" layoutY="123.0" mnemonicParsing="false" onAction="#startAlgorithm" prefHeight="36.0" prefWidth="87.0" text="Start" />
+   <ProgressBar fx:id="algorithmProgress" focusTraversable="false" layoutX="12.0" layoutY="335.0" prefHeight="18.0" prefWidth="560.0" progress="0.0">
       <effect>
          <ColorAdjust />
       </effect></ProgressBar>
-   <TextField fx:id="AlgorithmStatus" focusTraversable="false" layoutX="12.0" layoutY="310.0" prefHeight="25.0" prefWidth="474.0" />
-   <Circle fx:id="ConnectionStatusIndicator" fill="#c60404" layoutX="600.0" layoutY="374.0" radius="13.0" stroke="BLACK" strokeType="INSIDE" />
-   <Button fx:id="BrowseForDB" layoutX="539.0" layoutY="14.0" mnemonicParsing="false" onAction="#BrowseButtonAction" prefHeight="36.0" prefWidth="87.0" text="Szukaj" />
-   <Button fx:id="DBDisconnect" layoutX="113.0" layoutY="57.0" mnemonicParsing="false" onAction="#Disconnect" prefHeight="36.0" prefWidth="100.0" text="Rozłącz" />
-   <TextField fx:id="StartNode" layoutX="12.0" layoutY="171.0" promptText="Id węzła początkowego" />
-   <TextField fx:id="EndNode" layoutX="12.0" layoutY="200.0" promptText="Id węzła docelowego" />
-   <CheckBox fx:id="isOption1" layoutX="12.0" layoutY="175.0" mnemonicParsing="false" />
-   <CheckBox fx:id="isOption2" layoutX="12.0" layoutY="204.0" mnemonicParsing="false" />
-   <CheckBox fx:id="isOption3" layoutX="12.0" layoutY="233.0" mnemonicParsing="false" />
-   <TextField fx:id="PortInput" layoutX="432.0" layoutY="57.0" prefHeight="36.0" prefWidth="100.0" promptText="7690" />
-   <TextField fx:id="PortPrompt" focusTraversable="false" layoutX="345.0" layoutY="57.0" prefHeight="36.0" prefWidth="87.0" text="Numer Portu:" />
-   <TextField fx:id="ConnectionStatus" focusTraversable="false" layoutX="14.0" layoutY="362.0" prefHeight="25.0" prefWidth="560.0" />
-   <ChoiceBox fx:id="DistanceKey" layoutX="12.0" layoutY="254.0" prefHeight="25.0" prefWidth="149.0" />
-   <TextField fx:id="DistanceKeyPrompt" layoutX="12.0" layoutY="229.0" prefHeight="25.0" prefWidth="149.0" text="Klucz odległości:" />
-   <TextField fx:id="KeysLoadingPrompt" layoutX="12.0" layoutY="254.0" text="Wczytywanie" />
+   <TextField fx:id="algorithmStatus" focusTraversable="false" layoutX="12.0" layoutY="310.0" prefHeight="25.0" prefWidth="474.0" />
+   <Circle fx:id="connectionStatusIndicator" fill="#c60404" layoutX="600.0" layoutY="374.0" radius="13.0" stroke="BLACK" strokeType="INSIDE" />
+   <Button fx:id="browseForDB" layoutX="539.0" layoutY="14.0" mnemonicParsing="false" onAction="#browseForDB" prefHeight="36.0" prefWidth="87.0" text="Szukaj" />
+   <Button fx:id="disconnectFromDB" layoutX="113.0" layoutY="57.0" mnemonicParsing="false" onAction="#disconnect" prefHeight="36.0" prefWidth="100.0" text="Rozłącz" />
+   <TextField fx:id="startNodeInput" layoutX="12.0" layoutY="171.0" promptText="Id węzła początkowego" />
+   <TextField fx:id="endNodeInput" layoutX="12.0" layoutY="200.0" promptText="Id węzła docelowego" />
+   <CheckBox fx:id="isIndegree" layoutX="12.0" layoutY="175.0" mnemonicParsing="false" text="Relacje wchodzące" />
+   <CheckBox fx:id="isOutdegree" layoutX="12.0" layoutY="204.0" mnemonicParsing="false" text="Relacje wychodzące" />
+   <CheckBox fx:id="isDegree" layoutX="12.0" layoutY="233.0" mnemonicParsing="false" text="Stopień" />
+   <TextField fx:id="portInput" layoutX="432.0" layoutY="57.0" prefHeight="36.0" prefWidth="100.0" promptText="7690" />
+   <TextField fx:id="portPrompt" focusTraversable="false" layoutX="345.0" layoutY="57.0" prefHeight="36.0" prefWidth="87.0" text="Numer Portu:" />
+   <TextField fx:id="connectionStatus" focusTraversable="false" layoutX="14.0" layoutY="362.0" prefHeight="25.0" prefWidth="560.0" />
+   <ChoiceBox fx:id="distanceKeyChooser" layoutX="12.0" layoutY="254.0" prefHeight="25.0" prefWidth="149.0" />
+   <TextField fx:id="distanceKeyPrompt" layoutX="12.0" layoutY="229.0" prefHeight="25.0" prefWidth="149.0" text="Klucz odległości:" />
+   <TextField fx:id="keysLoadingPrompt" layoutX="12.0" layoutY="254.0" text="Wczytywanie..." />
    <CheckBox fx:id="isFindCuts" layoutX="12.0" layoutY="175.0" mnemonicParsing="false" text="Wyszukiwanie przecięć" />
    <CheckBox fx:id="isFindBridges" layoutX="12.0" layoutY="204.0" mnemonicParsing="false" text="Wyszukiwanie mostów" />
  </Pane>

@@ -1,6 +1,6 @@
 package application;
 
-import application.controller.Menu;
+import application.controller.MenuController;
 import application.model.Neo4jConnection;
 import javafx.animation.PauseTransition;
 import javafx.application.Application;
@@ -14,44 +14,46 @@ import javafx.util.Duration;
 
 public class Main extends Application {
 	
-	private PauseTransition delay = new PauseTransition(Duration.seconds(1));	
-	private Stage Loading;
+	private Stage loading;
 
     @Override
-    public void start(Stage MainStage) throws Exception {
+    public void start(Stage mainStage) throws Exception {
+    	final PauseTransition delay = new PauseTransition(Duration.seconds(1));	
+    	
+        final FXMLLoader loadingScreenLoader = new FXMLLoader(getClass().getResource("view/LoadingScreen.fxml"));
+        final FXMLLoader menuLoder = new FXMLLoader(getClass().getResource("view/Menu.fxml"));
 
-        final FXMLLoader LoadingScreen = new FXMLLoader(getClass().getResource("view/LoadingScreen.fxml"));
-        final FXMLLoader Menu = new FXMLLoader(getClass().getResource("view/Menu.fxml"));
-
-        Parent root = LoadingScreen.load();
-        Scene loading = new Scene(root);
-        loading.getStylesheets().add("/application/resource/Custom.css");
+        Parent root = loadingScreenLoader.load();
+        Scene loadingScene = new Scene(root);
+        
+        loadingScene.getStylesheets().add("/application/resource/Custom.css");
                    
-        Loading = new Stage();
-        Loading.getIcons().add(new Image("application/resource/Icon.png"));
-        Loading.initStyle(StageStyle.TRANSPARENT);
-        Loading.setScene(loading);         
-        Loading.show();
+        loading = new Stage();
+        loading.getIcons().add(new Image("application/resource/Icon.png"));
+        loading.initStyle(StageStyle.TRANSPARENT);
+        loading.setScene(loadingScene);         
+        loading.show();
     	
-    	root = Menu.load();
+    	root = menuLoder.load();
     	
-    	MainStage.getIcons().add(new Image("application/resource/Icon.png"));
-    	MainStage.setTitle("Neo4j Algorithm");    	
-    	MainStage.setScene(new Scene(root));
-    	MainStage.initStyle(StageStyle.UNIFIED);
-    	MainStage.maximizedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue)
-                MainStage.setMaximized(false);
+    	mainStage.getIcons().add(new Image("application/resource/Icon.png"));
+    	mainStage.setTitle("Neo4j Algorithm");    	
+    	mainStage.setScene(new Scene(root));
+    	mainStage.initStyle(StageStyle.UNIFIED);
+    	mainStage.maximizedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                mainStage.setMaximized(false);
+            }
         });
     	
-    	Neo4jConnection Neo4jConnection = new Neo4jConnection();
+    	Neo4jConnection neo4jConnection = new Neo4jConnection();
     	
-    	Menu MenuCtr = Menu.getController();
-    	MenuCtr.initNeo4jConnection(Neo4jConnection);
+    	MenuController menuController = menuLoder.getController();
+    	menuController.initNeo4jConnection(neo4jConnection);
     	  	
         delay.setOnFinished(event -> {
-        	Loading.hide();
-        	MainStage.show();
+        	loading.hide();
+        	mainStage.show();
         });
         delay.play();        
     }

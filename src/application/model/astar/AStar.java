@@ -14,8 +14,7 @@ import javafx.scene.control.ProgressBar;
 
 public class AStar{
 
-    private GraphAStar graph;
-    
+    private GraphAStar graph;    
     private ProgressBar progress;
 	
 	public AStar(GraphAStar graph, ProgressBar progress) {
@@ -23,7 +22,7 @@ public class AStar{
 		this.progress = progress;
 	} 
 
-    List<Integer> astar(int start, int end) {
+    List<Integer> compute(int start, int end) {
     	//Java docs
     	//Creates a PriorityQueue with the default initial capacity (11),
     	//that orders its elements according to their natural ordering
@@ -35,7 +34,7 @@ public class AStar{
         openQueue.add(sourceNodeData);
 
         final Map<Integer, Integer> path = new HashMap<>();
-        final Set<NodeAStar> closedList = new HashSet<>();
+        final Set<NodeAStar> closedSet = new HashSet<>();
         while (!openQueue.isEmpty()) {
             final NodeAStar nodeData = openQueue.poll();
             if (nodeData.id() == end) {
@@ -43,14 +42,13 @@ public class AStar{
                 return path(path, end);
             }
             
-            closedList.add(nodeData);
+            closedSet.add(nodeData);
             graph.edgesFrom(nodeData.id()).forEach((node,distance) -> {
             	NodeAStar neighbor = graph.getNodeData(node);
 
-                double distanceBetweenTwoNodes = distance;
-                double tentativeG = distanceBetweenTwoNodes + nodeData.G();
+                double tentativeG = distance + nodeData.g();
 
-                if (tentativeG < neighbor.G()) {
+                if (tentativeG < neighbor.g()) {
                     neighbor.setG(tentativeG);
                     neighbor.calcF(end);
  
@@ -61,13 +59,10 @@ public class AStar{
                 }
     		});
         }
-
         return null;
     }
 
     private List<Integer> path(Map<Integer, Integer> path, int destination) {
-        assert path != null;
-
         final List<Integer> pathList = new ArrayList<>();
         pathList.add(destination);
         while (path.containsKey(destination)) {

@@ -1,5 +1,7 @@
 package application.model.connectivity;
 
+import java.util.ArrayList;
+
 import application.model.Node;
 
 public class NodeConn extends Node{
@@ -7,12 +9,12 @@ public class NodeConn extends Node{
 	private int pre;
 	private int low;	
 	private boolean isArticulationPoint;
-	private NodeConnBag<NodeConn> adj;
+	private ArrayList<NodeConn> adjecentNodes;
 	
 	public NodeConn(int id) {
 		super(id);
 		this.isArticulationPoint = false;
-		this.adj = new NodeConnBag<NodeConn>();
+		this.adjecentNodes = new ArrayList<NodeConn>();
 	}
 	
 	public int pre() {
@@ -39,7 +41,7 @@ public class NodeConn extends Node{
 		this.isArticulationPoint = true;
 	}
 
-	public NodeConnBag<NodeConn> adj() {
-		return adj;
+	public ArrayList<NodeConn> adj() {
+		return adjecentNodes;
 	}
 }

@@ -14,22 +14,21 @@ public class PropertyHelper implements Runnable{
 	
 	private String key;
 	
-	private boolean found;
+	private boolean isFound;
 	
-	
-	protected final Logger log = Logger.getLogger(getClass().getName());
+	private final Logger logger = Logger.getLogger(getClass().getName());
 	
 	public PropertyHelper(Session session) {
 		this.session = session;
-		tx = session.beginTransaction();
+		this.tx = session.beginTransaction();
 	}
 	
 	public boolean isFound() {
-		return found;
+		return isFound;
 	}
 	
 	public void setKey(String key) {
-		this.found = false;
+		this.isFound = false;
 		this.key = key;
 	}
 	
@@ -38,7 +37,7 @@ public class PropertyHelper implements Runnable{
 			tx.close();
 			session.close();
 		}catch(Exception e) {
-			log.log(Level.INFO, "Zamkniêcie sesji z dzia³aj¹c¹ transakcj¹, klucz nie znaleziony");
+			logger.log(Level.INFO, "Zamkniêcie sesji z dzia³aj¹c¹ transakcj¹, klucz nie znaleziony");
 		}
 	}
  
@@ -50,12 +49,12 @@ public class PropertyHelper implements Runnable{
 	private void checkRelationKey(){
 		try {
 			if(tx.run("match ()-[r]->() where r." + key + " is not null return r limit 1").list().size() != 0) {
-				this.found = true;
-				tx.close();
-				session.close();
+				this.isFound = true;
+				this.tx.close();
+				this.session.close();
 			}
 		}catch(ServiceUnavailableException e) {
-			log.log(Level.INFO, "Klucz nie nale¿y do atrybutów relacji", key);
+			logger.log(Level.INFO, "Klucz " + key + " nie nale¿y do atrybutów relacji", key);
 		}
 	}
 }

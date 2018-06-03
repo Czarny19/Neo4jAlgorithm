@@ -10,8 +10,7 @@ public class NodeBtwns extends Node{
 	private double sigma;
 	private double delta;
 	private double distance;
-	private HashSet<NodeBtwns> Predecessors;
-	private HashSet<NodeBtwns> Successors;
+	private HashSet<NodeBtwns> predecessors;
 	
 	public NodeBtwns(int id) {
 		super(id);
@@ -50,19 +49,10 @@ public class NodeBtwns extends Node{
 	}
 
 	public HashSet<NodeBtwns> predecessors() {
-		return Predecessors;
+		return predecessors;
 	}
 
 	public void setPredecessors(HashSet<NodeBtwns> Predecessors) {
-		this.Predecessors = Predecessors;
+		this.predecessors = Predecessors;
 	}
-
-	public HashSet<NodeBtwns> successors() {
-		return Successors;
-	}
-
-	public void setSuccessors(HashSet<NodeBtwns> Succesors) {
-		this.Successors = Succesors;
-	}
-
 }

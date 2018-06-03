@@ -4,6 +4,6 @@ import java.util.Comparator;
 
 public class NodeComparator implements Comparator<NodeAStar> {
     public int compare(NodeAStar nodeFirst, NodeAStar nodeSecond) {
-        return Double.compare(nodeFirst.F(), nodeSecond.F());
+        return Double.compare(nodeFirst.f(), nodeSecond.f());
     }
 }

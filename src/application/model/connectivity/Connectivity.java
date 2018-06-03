@@ -7,41 +7,46 @@ import javafx.scene.control.ProgressBar;
 
 public class Connectivity {
 	
-	private ArrayList<String> Bridges;
-	
-	private HashMap<Integer,NodeConn> Nodes;
+	private ArrayList<String> bridges;	
+	private HashMap<Integer,NodeConn> nodes;
 	
 	private ProgressBar progress;
 
 	private double nodesCount;
+	
+	private int computedCount;
 	private int count;
 	
-	public Connectivity(HashMap<Integer,NodeConn> Nodes, ProgressBar progress, double nodesCount){
-		this.Bridges = new ArrayList<String>();
-		this.Nodes = Nodes;
+	public Connectivity(HashMap<Integer,NodeConn> Nodes, ProgressBar progress, double nodesCount){		
+		this.nodes = Nodes;
 		this.progress = progress;   
 		this.nodesCount = nodesCount;
+		this.bridges = new ArrayList<String>();
 	}
 	
 	public void compute(boolean doNodes, boolean doEdges) {
-		for (NodeConn node : Nodes.values()) {
+		for (NodeConn node : nodes.values()) {
 	    	node.setPre(-1);
 	    	node.setLow(-1);
 	    }	
 		if(doNodes) {
-			for(NodeConn node : Nodes.values()) {
-		    	if(node.pre() == -1) {
-					dfsNodes(node, node);
-		    	}			
-		    	progress.setProgress(0.4 + (count++/nodesCount)/2.5);
+			for(NodeConn node : nodes.values()) {
+		    	if(node.pre() == -1)
+					dfsNodes(node, node);		
+		    	progress.setProgress(0.4 + (computedCount++/nodesCount)/2.5);
 			}
 		}
 		if(doEdges) {
-			for(NodeConn node : Nodes.values()) {
+			for(NodeConn node : nodes.values()) {
 		    	if(node.pre() == -1) {
-		    		dfsEdges(node, node);
-		    	}	
-		    	progress.setProgress(0.4 + (count++/nodesCount)/2.5);
+		    		dfsEdges(node,node);
+		    		for(NodeConn node2 : nodes.values()) {
+		    			if(node.pre() != -1) {
+		    				node2.adj().removeAll(node2.adj());
+		    			}
+		    		}
+		    	}
+		    	progress.setProgress(0.4 + (computedCount++/nodesCount)/2.5);
 			}
 		}
 	}
@@ -51,12 +56,12 @@ public class Connectivity {
 		nodeTo.setLow(nodeTo.pre());
 	    for (NodeConn nodeAdj : nodeTo.adj()){
 	    	if (nodeAdj.pre() == -1){
-	    		dfsEdges(nodeTo, nodeAdj);
+	    		dfsEdges(nodeTo, nodeAdj);	    		
 	            nodeTo.setLow(Math.min(nodeTo.low(), nodeAdj.low()));
 	            if (nodeAdj.low() == nodeAdj.pre()) {
-                    Bridges.add(nodeTo.id() + " " + nodeAdj.id());
-                    Bridges.add(nodeAdj.id() + " " + nodeTo.id());
-	            }
+                    bridges.add(nodeTo.id() + " " + nodeAdj.id());
+                    bridges.add(nodeAdj.id() + " " + nodeTo.id());
+                }
 	        }
 	    	else if (nodeAdj != nodeFrom)
 	    		nodeTo.setLow(Math.min(nodeTo.low(), nodeAdj.low()));
@@ -68,7 +73,6 @@ public class Connectivity {
 		nodeTo.setPre(count++);
 		nodeTo.setLow(nodeTo.pre());
 	    for (NodeConn nodeAdj : nodeTo.adj()){
-	    	System.out.println(nodeAdj.id());
 	    	if (nodeAdj.pre() == -1){
 	    		children++;
 	            dfsNodes(nodeTo, nodeAdj);
@@ -85,6 +89,6 @@ public class Connectivity {
 	}
 	
 	public ArrayList<String> bridges(){
-		return Bridges;
+		return bridges;
 	}
 }

@@ -9,25 +9,25 @@ import java.util.ArrayList;
 
 public class FileCreator {
 	
-	private ArrayList<String> WriteParams;
+	private ArrayList<String> writeParams;
 	
 	private File fileToSave;
 	
-	private Path DBpath;
+	private Path pathToDB;
 	
-	public FileCreator(Path DBpath) {
-		WriteParams = new ArrayList<String>();		
-		this.DBpath = DBpath;		
+	public FileCreator(Path pathToDB) {
+		writeParams = new ArrayList<String>();		
+		this.pathToDB = pathToDB;		
 	}
 	
 	public void setFileName(String fileName) {
-		this.fileToSave = new File(DBpath + File.separator + "AlgResults" + File.separator + fileName + ".txt");
+		this.fileToSave = new File(pathToDB + File.separator + "AlgResults" + File.separator + fileName + ".txt");
 	}
 	
 	public void create() throws IOException {
 		fileToSave.getParentFile().mkdirs();
 		BufferedWriter writer = new BufferedWriter(new FileWriter(fileToSave.getPath()));
-		for(String lineToWrite : WriteParams) {
+		for(String lineToWrite : writeParams) {
 			writer.write(lineToWrite);
 			writer.newLine();
 		}	     
@@ -35,10 +35,10 @@ public class FileCreator {
 	}
 	
 	public void addLine(String line) {
-		WriteParams.add(line);
+		writeParams.add(line);
 	}
 	
 	public void addEmptyLine() {
-		WriteParams.add("");
+		writeParams.add("");
 	}
 }

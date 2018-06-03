@@ -9,6 +9,5 @@ public class NodeComparator implements Comparator<NodeGC>{
 		return nodeOne.neighbors().size() < nodeTwo.neighbors().size() ? 1 
 			: nodeOne.neighbors().size() == nodeTwo.neighbors().size() ? 0 
 			: -1;
-	}
-	
+	}	
 }

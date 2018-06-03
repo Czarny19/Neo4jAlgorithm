@@ -7,20 +7,19 @@ import application.model.Neo4jConnection;
 
 class Neo4jConnectionTest {
 	
-	Neo4jConnection Neo4jConnTest = new Neo4jConnection();
-	Thread StartConnection = new Thread(Neo4jConnTest);
+	Neo4jConnection neo4jConnTest = new Neo4jConnection();
+	Thread startConnection = new Thread(neo4jConnTest);
 
 	@BeforeEach
 	void setUp() throws Exception {
-		Neo4jConnTest.initPath("C:\\Users\\User\\Desktop\\Neo4j Extended\\Neo4JDB_3_1_20161103\\Neo4JDB_3_1");
-		Neo4jConnTest.initPortNumber("7690");		
-		StartConnection.start();
-		StartConnection.join();
+		neo4jConnTest.initPath("C:\\Users\\User\\Desktop\\Neo4j Extended\\Neo4JDB_3_1_20161103\\Neo4JDB_3_1");
+		neo4jConnTest.initPortNumber("7690");		
+		startConnection.start();
+		startConnection.join();
 	}
 
 	@Test
 	void executeQueryAfterDBConnection() {
-		Neo4jConnTest.driver().session().beginTransaction().run("match (a)-[r]->(b) where ID(a)=1 return r");
+		neo4jConnTest.driver().session().beginTransaction().run("match (a)-[r]->(b) where ID(a)=1 return r");
 	}
-
 }

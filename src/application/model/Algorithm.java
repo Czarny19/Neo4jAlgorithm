@@ -10,166 +10,185 @@ import org.neo4j.driver.v1.Driver;
 
 import application.model.astar.AStarThread;
 import application.model.betweenness.BCThread;
-import application.model.coloring.GraphColoring;
+import application.model.coloring.GraphColoringThread;
 import application.model.connectivity.ConnectivityThread;
-import application.model.degree.DegreeCentrality;
+import application.model.degree.DegreeCentralityThread;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 
-public class Algorithms {
+public class Algorithm {
 	
-	private StopWatch execTime;
+	private Driver neo4jDriver;
 	private ProgressBar progress;
-	private FileCreator algInfo;
 	private TextField progressPrompt;
+	private FileCreator algInfo;
+	private StopWatch execTime;
 	
-	DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH;mm;ss");
-	Date date = new Date();
+	private final DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH;mm;ss");
+	private final Date date = new Date();
 	
-	public Algorithms(ProgressBar progress, TextField progressPrompt, FileCreator algInfo) {
+	public Algorithm(Driver neo4jDriver, ProgressBar progress, TextField progressPrompt, FileCreator algInfo, StopWatch execTime) {
+		this.neo4jDriver = neo4jDriver;
 		this.progress = progress;
-		this.algInfo = algInfo;
 		this.progressPrompt = progressPrompt;
-	}
-	
-	public void setStopWatch(StopWatch execTime) {
+		this.algInfo = algInfo;	
 		this.execTime = execTime;
 	}
-	
-	private void saveExecTimeToFile() {
-		algInfo.addLine("Czas wykonania algorytmu : ");
-		algInfo.addLine((execTime.getTime()/3600000)%60 + " h; " +
-				(execTime.getTime()/60000)%60 + " m; " +
-				(execTime.getTime()/1000)%60 + " s; " +
-				execTime.getTime()%1000 + " ms;");
-	}
 
-	public void AStar(Driver neo4jDriver, String startNode, String endNode, String distanceKey) throws InterruptedException{
+	public void aStar(String startNode, String endNode, String distanceKey) throws InterruptedException{		
+		final int startId = Integer.parseInt(startNode);
+		final int endId = Integer.parseInt(endNode);
+		
 		if(startNode.matches("[0-9]+") && endNode.matches("[0-9]+") && distanceKey != null) {
-			final int startId = Integer.parseInt(startNode);
-			final int endId = Integer.parseInt(endNode);
-			
 			AStarThread aStarThread = new AStarThread(neo4jDriver, startId, endId, distanceKey, progress, progressPrompt);
 			
-			if(aStarThread.startExists() && aStarThread.endExists()) {
-				
+			if(aStarThread.startNodeExists() && aStarThread.endNodeExists()) {			
 				progress.setVisible(true);
 				progressPrompt.setVisible(true);
 				
-				Thread Start_A_star = new Thread(aStarThread);
-				Start_A_star.start();
-				Start_A_star.join();
+				Thread aStar = new Thread(aStarThread);
+				aStar.start();
+				aStar.join();
 				
 				algInfo.setFileName("Astar" + "(" + dateFormat.format(date).replaceAll(" ", "_") + ")");
 				saveExecTimeToFile();
 				aStarThread.algExecToFile(algInfo);
 				try {
 					algInfo.create();
-					afterAlg(execTime,"Astar");
+					algSucces(execTime,"Astar");
 				}catch(IOException e) {
-					afterAlgFailedToSave(execTime,"Astar");
+					algFail(execTime,"Astar");
 				}
+				
+				progress.setProgress(0);
+				progressPrompt.setText("");				
+				progress.setVisible(false);
+				progressPrompt.setVisible(false);	
 			}
-			else
-				aStarMessage(aStarThread.startExists(), aStarThread.endExists(), false);
+			else {
+				aStarMessage(aStarThread.startNodeExists(), aStarThread.endNodeExists(), false);
+			}
 		}		
-		else
+		else {
 			aStarMessage(true, true, true);
+		}
 	}
 	
-	public void betweennessCentrality(Driver neo4jDriver, boolean isDirected) throws InterruptedException {
-		
+	public void betweennessCentrality(boolean isDirected) throws InterruptedException {		
 		progress.setVisible(true);
 		progressPrompt.setVisible(true);
 		
-		BCThread BCThread = new BCThread(neo4jDriver,isDirected, progress, progressPrompt);
-		Thread Start_BC = new Thread(BCThread);
-		Start_BC.start();
-		Start_BC.join();
+		BCThread betweennessThread = new BCThread(neo4jDriver,isDirected, progress, progressPrompt);
+		Thread betweennessCentrality = new Thread(betweennessThread);
+		betweennessCentrality.start();
+		betweennessCentrality.join();
 		
 		algInfo.setFileName("Betweenness" + "(" + dateFormat.format(date).replaceAll(" ", "_") + ")");
 		saveExecTimeToFile();
-		BCThread.algExecToFile(algInfo);
+		betweennessThread.algExecToFile(algInfo);
 		try {
 			algInfo.create();
-			afterAlg(execTime,"Betweenness");
+			algSucces(execTime,"Betweenness");
 		} catch (IOException e) {
-			afterAlgFailedToSave(execTime,"Betweenness");
-		}	
+			algFail(execTime,"Betweenness");
+		}
+		
+		progress.setProgress(0);
+		progressPrompt.setText("");		
+		progress.setVisible(false);
+		progressPrompt.setVisible(false);	
 	}
 	
-	public void graphColoring(Driver neo4jDriver) throws InterruptedException {
-		
+	public void graphColoring() throws InterruptedException {		
 		progress.setVisible(true);
 		progressPrompt.setVisible(true);
 		
-		GraphColoring graphColoring = new GraphColoring(neo4jDriver, progress, progressPrompt);
-		Thread Start_Coloring = new Thread(graphColoring);
-		Start_Coloring.start();
-		Start_Coloring.join();
+		GraphColoringThread graphColoringThread = new GraphColoringThread(neo4jDriver, progress, progressPrompt);
+		Thread graphColoring = new Thread(graphColoringThread);
+		graphColoring.start();
+		graphColoring.join();
 		
-		algInfo.setFileName("Kolorowanie grafu" + "(" + dateFormat.format(date).replaceAll(" ", "_") + ")");
+		algInfo.setFileName("Coloring" + "(" + dateFormat.format(date).replaceAll(" ", "_") + ")");
 		saveExecTimeToFile();		
-		graphColoring.algExecToFile(algInfo);
+		graphColoringThread.algExecToFile(algInfo);
 		try {
 			algInfo.create();
-			afterAlg(execTime,"Kolorowanie grafu");
+			algSucces(execTime,"Coloring");
 		} catch (IOException e) {
-			afterAlgFailedToSave(execTime,"Kolorowanie grafu");
+			algFail(execTime,"Coloring");
 		}
+		
+		progress.setProgress(0);
+		progressPrompt.setText("");		
+		progress.setVisible(false);
+		progressPrompt.setVisible(false);	
 	}
 	
-	public void degreeCentrality(Driver neo4jDriver, boolean isIndegree, boolean isOutdegree, boolean isBoth) throws InterruptedException {
-		if(!isIndegree && !isOutdegree && !isBoth) {
+	public void degreeCentrality(boolean isIndegree, boolean isOutdegree, boolean isDegree) throws InterruptedException {
+		if(!isIndegree && !isOutdegree && !isDegree) {
 			optionsNotSelectedMessage();
 		}
-		if(isIndegree || isOutdegree || isBoth){
-			
+		if(isIndegree || isOutdegree || isDegree){			
 			progress.setVisible(true);
 			progressPrompt.setVisible(true);
 			
-			DegreeCentrality degreeCentrality = new DegreeCentrality(neo4jDriver, isIndegree, isOutdegree, isBoth, progress, progressPrompt);
-			Thread Start_Degree = new Thread(degreeCentrality);
-			Start_Degree.start();
-			Start_Degree.join();
+			DegreeCentralityThread degreeCentralityThread = new DegreeCentralityThread(
+					neo4jDriver, 
+					isIndegree, 
+					isOutdegree, 
+					isDegree,
+					progress, 
+					progressPrompt);
+			Thread degreeCentrality = new Thread(degreeCentralityThread);
+			degreeCentrality.start();
+			degreeCentrality.join();
 			
 			algInfo.setFileName("Degree" + "(" + dateFormat.format(date).replaceAll(" ", "_") + ")");
 			saveExecTimeToFile();			
-			degreeCentrality.algExecToFile(algInfo);
+			degreeCentralityThread.algExecToFile(algInfo);
 			try {
 				algInfo.create();
-				afterAlg(execTime,"Degree");
+				algSucces(execTime,"Degree");
 			} catch (IOException e) {
-				afterAlgFailedToSave(execTime,"Degree");
+				algFail(execTime,"Degree");
 			}
+			
+			progress.setProgress(0);
+			progressPrompt.setText("");			
+			progress.setVisible(false);
+			progressPrompt.setVisible(false);			
 		}
 	}
 	
-	public void Connectivity(Driver neo4jDriver, boolean doNodes, boolean doEdges) throws InterruptedException {
+	public void connectivity(boolean doNodes, boolean doEdges) throws InterruptedException {
 		if(!doNodes && !doEdges) {
 			optionsNotSelectedMessage();
 		}
-		else {
-			
+		else {			
 			progress.setVisible(true);
 			progressPrompt.setVisible(true);
 			
 			ConnectivityThread ConnectivityThread = new ConnectivityThread(neo4jDriver, doNodes, doEdges, progress, progressPrompt);
-			Thread Start_Conn = new Thread(ConnectivityThread);
-			Start_Conn.start();
-			Start_Conn.join();
+			Thread connectivity = new Thread(ConnectivityThread);
+			connectivity.start();
+			connectivity.join();
 			
 			algInfo.setFileName("Connectivity" + "(" + dateFormat.format(date).replaceAll(" ", "_") + ")");
 			saveExecTimeToFile();			
 			ConnectivityThread.algExecToFile(algInfo);
 			try {
 				algInfo.create();
-				afterAlg(execTime,"Connectivity");
+				algSucces(execTime,"Connectivity");
 			} catch (IOException e) {
-				afterAlgFailedToSave(execTime,"Connectivity");
+				algFail(execTime,"Connectivity");
 			}
+			
+			progress.setProgress(0);
+			progressPrompt.setText("");			
+			progress.setVisible(false);
+			progressPrompt.setVisible(false);	
 		}
 	}
 	
@@ -211,7 +230,15 @@ public class Algorithms {
 		});		
 	}
 	
-	private void afterAlg(StopWatch execTime, String algorithmName) {
+	private void saveExecTimeToFile() {
+		algInfo.addLine("Czas wykonania algorytmu : ");
+		algInfo.addLine((execTime.getTime()/3600000)%60 + " h; " +
+				(execTime.getTime()/60000)%60 + " m; " +
+				(execTime.getTime()/1000)%60 + " s; " +
+				execTime.getTime()%1000 + " ms;");
+	}
+	
+	private void algSucces(StopWatch execTime, String algorithmName) {
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
 				Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -233,7 +260,7 @@ public class Algorithms {
 		});
 	}
 	
-	private void afterAlgFailedToSave(StopWatch execTime, String algorithmName) {
+	private void algFail(StopWatch execTime, String algorithmName) {
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
 				Alert alert = new Alert(Alert.AlertType.INFORMATION);

@@ -19,11 +19,11 @@ public class AStarThread implements Runnable{
     private Driver neo4jdriver;
     private String distanceKey;
     
-    private HashMap<Integer,NodeAStar> Nodes;
-    private HashMap<String,RelationAStar> Relations;
+    private HashMap<Integer,NodeAStar> nodes;
+    private HashMap<String,RelationAStar> relations;
 
-    private int StartId;
-    private int EndId;
+    private int startNodeId;
+    private int endNodeId;
     
     private ProgressBar progress;
     private TextField progressPrompt;
@@ -33,37 +33,37 @@ public class AStarThread implements Runnable{
     public AStarThread(Driver neo4jdriver, int StartId, int EndId, String distanceKey, ProgressBar progress, TextField progressPrompt) {
     	this.neo4jdriver = neo4jdriver;
         this.distanceKey = distanceKey;
-        this.StartId = StartId;
-        this.EndId = EndId;
+        this.startNodeId = StartId;
+        this.endNodeId = EndId;
         this.progress = progress;
         this.progressPrompt = progressPrompt;
     }
     
-    public boolean startExists() {
-    	if(getNodeById(StartId).size() == 1) {
+    public boolean startNodeExists() {
+    	if(!getNodeById(startNodeId).isEmpty()) {
     		return true;
     	}
     	return false;
     }
     
-    public boolean endExists() {
-    	if(getNodeById(EndId).size() == 1) {
+    public boolean endNodeExists() {
+    	if(!getNodeById(endNodeId).isEmpty()) {
     		return true;
     	}
     	return false;
     }
     
     private HashMap<Integer,NodeAStar> initNodes() {    
-    	Nodes = new HashMap<Integer,NodeAStar>();
+    	nodes = new HashMap<Integer,NodeAStar>();
     	for(Record record : getNodesList()) {
     		NodeAStar node = new NodeAStar(record.get(0).asInt(), new HashMap<>());
-    		Nodes.put(record.get(0).asInt(),node);
+    		nodes.put(record.get(0).asInt(),node);
     	}
-    	return Nodes;
+    	return nodes;
     }
     
     private HashMap<String, RelationAStar> initRelations() {
-    	Relations = new HashMap<String,RelationAStar>();
+    	relations = new HashMap<String,RelationAStar>();
     	for(Record record : getRelationsList()) {
     		RelationAStar relation;
     		if(record.get(3).toString() == "NULL" || distanceKey.equals("Brak klucza")) {
@@ -72,8 +72,8 @@ public class AStarThread implements Runnable{
         				record.get(0).asInt(),
         				record.get(2).asInt(),
         				1.0);	
-    			if(!Relations.containsKey(relation.nodeFrom()+" "+relation.nodeTo()))
-    				Relations.put(relation.nodeFrom()+" "+relation.nodeTo(),relation);
+    			if(!relations.containsKey(relation.nodeFrom() + " " + relation.nodeTo()))
+    				relations.put(relation.nodeFrom() + " " + relation.nodeTo(),relation);
     		}
     		else {
     			relation = new RelationAStar(
@@ -81,124 +81,119 @@ public class AStarThread implements Runnable{
         				record.get(0).asInt(),
         				record.get(2).asInt(),
         				record.get(3).asDouble());
-    			if(Relations.containsKey(relation.nodeFrom()+" "+relation.nodeTo())) {
-        			if(relation.distance() < Relations.get(relation.nodeFrom()+" "+relation.nodeTo()).distance()) {
-        				Relations.put(relation.nodeFrom()+" "+relation.nodeTo(),relation);   
+    			if(relations.containsKey(relation.nodeFrom() + " " + relation.nodeTo())) {
+        			if(relation.distance() < relations.get(relation.nodeFrom() + " " + relation.nodeTo()).distance()) {
+        				relations.put(relation.nodeFrom() + " " + relation.nodeTo(),relation);   
         			}
         		}
         		else {
-        			Relations.put(relation.nodeFrom()+" "+relation.nodeTo(),relation);
+        			relations.put(relation.nodeFrom() + " " + relation.nodeTo(),relation);
         		}
     		}
     	}
-
-    	return Relations;
+    	return relations;
     }
 
     @Override
     public void run() {
     	HashMap<Integer, HashMap<Integer, Double>> heuristic = new HashMap<>();	
-		Nodes = initNodes();
-		progressPrompt.setText("Wykonywana operacja: WYSZUKIWANIE ŒCIE¯KI");
+		
+		progressPrompt.setText("Wykonywana operacja: POBIERANIE WIERZCHO£KÓW");
+		initNodes();
 		progress.setProgress(0.2);
-		Relations = initRelations();
+		
+		progressPrompt.setText("Wykonywana operacja: POBIERANIE RELACJI");		
+		initRelations();
 		progress.setProgress(0.4);
 			
 		GraphAStar graph = new GraphAStar();	
 		
-		double arraySize = Nodes.size();
-		double localProg = 0;
+		double relationsCount = relations.size();
+		double nodesCount = nodes.size();
+		double localProgress = 0;
 				
-		for (Integer idFrom : Nodes.keySet()) {
+		progressPrompt.setText("Wykonywana operacja: WYSZUKIWANIE ŒCIE¯KI");
+		for (Integer nodeFromid : nodes.keySet()) {
 			HashMap<Integer, Double> map = new HashMap<Integer, Double>();
-			for (Integer idTo : Nodes.keySet()) {
-				if(idFrom == idTo)
-	                map.put(idTo, 0.0);
+			for (Integer nodeToid : nodes.keySet()) {
+				if(nodeFromid == nodeToid)
+	                map.put(nodeToid, 0.0);
 				else 
-					map.put(idTo, 1.0);
+					map.put(nodeToid, 1.0);
 			}
-			localProg += 1;
-			progress.setProgress((localProg/arraySize)/4);
-			heuristic.put(idFrom, map);
+			progress.setProgress(0.4 + (localProgress++/nodesCount)/5);
+			heuristic.put(nodeFromid, map);
 		}
 		
 		graph.setHeuristic(heuristic);
 		
-		localProg = 0;
-		for (Integer id : Nodes.keySet()) {
-			graph.addNode(id);
-			localProg += 1;
-			progress.setProgress(0.25+(localProg/arraySize)/4);
+		localProgress = 0;
+		for (Integer nodeId : nodes.keySet()) {
+			graph.addNode(nodeId);
+			progress.setProgress(0.6+(localProgress++/nodesCount)/5);
 		}
 		
-		localProg = 0;
-		arraySize = Relations.size();
-		
-		for (RelationAStar relation : Relations.values()) {
+		localProgress = 0;		
+		for (RelationAStar relation : relations.values()) {
 			int nodeFromId = -1;
 			int nodeToId = -1;
 			
-			for (int id : Nodes.keySet()) {
-				if(id == relation.nodeFrom())
-					nodeFromId = id;
+			for (int nodeId : nodes.keySet()) {
+				if(nodeId == relation.nodeFrom())
+					nodeFromId = nodeId;
 				
-				if(id == relation.nodeTo())
-					nodeToId = id;
+				if(nodeId == relation.nodeTo())
+					nodeToId = nodeId;
 				
 				if(nodeFromId != -1 && nodeToId != -1)
 					graph.addEdge(nodeFromId, nodeToId, relation.distance());
 			}
 			
-			localProg += 1;
-			progress.setProgress(0.5+(localProg/arraySize)/4);
+			progress.setProgress(0.8+(localProgress++/relationsCount)/5);
 		}
 
 		aStar = new AStar(graph, progress);
     }
     
     public void algExecToFile(FileCreator algInfo) {
-    	ArrayList<String> Path = new ArrayList<String>();
+    	ArrayList<String> path = new ArrayList<String>();
     	
     	algInfo.addEmptyLine();
-    	algInfo.addLine("ID Wierzcho³ka pocz¹tkowego = " + StartId);
-    	algInfo.addLine("ID wierzcho³ka koñcowego    = " + EndId);
+    	algInfo.addLine("ID Wierzcho³ka pocz¹tkowego = " + startNodeId);
+    	algInfo.addLine("ID wierzcho³ka koñcowego    = " + endNodeId);
     	algInfo.addEmptyLine();
     	algInfo.addLine("Œcie¿ka :");
     	try {
     		double distanceSum = 0;
-			for (Integer pathElement : aStar.astar(StartId , EndId)) {	
-				Path.add(pathElement.toString());
+    		
+			for (Integer pathElement : aStar.compute(startNodeId , endNodeId)) {	
+				path.add(pathElement.toString());
 			}
-			for(int i=0 ; i < Path.size()-1 ; i++) {
-				distanceSum += Relations.get(Path.get(i)+" "+Path.get(i+1)).distance();
+			
+			for(int i=0 ; i < path.size()-1 ; i++) {
+				distanceSum += relations.get(path.get(i)+" "+path.get(i+1)).distance();
 			}
+			
 			algInfo.addLine("--- Klucz odleg³oœci    = " + distanceKey);
 			algInfo.addLine("--- Odleg³oœæ ca³kowita = " + distanceSum);
 			algInfo.addEmptyLine();
-			Transaction tx = neo4jdriver.session().beginTransaction();
 			
-			for(int i=0 ; i < Path.size() ; i++) {
-				algInfo.addLine("ID: " + Path.get(i) + 
-						"	Wierzcho³ek : " + getNodeData(tx,Path.get(i)));
-				if(i != (Path.size()-1)) {
-					int relationId = Relations.get(Path.get(i)+" "+Path.get(i+1)).id();
-					algInfo.addLine("		ID: " + relationId + " Wierzcho³ki relacji: " +  
-							Path.get(i)+" --> "+Path.get(i+1) + 
-							"	Relacja : " +
-							getRelationData(relationId));
+			Transaction tx = neo4jdriver.session().beginTransaction();			
+			for(int i=0 ; i < path.size() ; i++) {
+				algInfo.addLine("ID: " + path.get(i) + "	Wierzcho³ek : " + getNodeById(Integer.parseInt(path.get(i))));
+				if(i != (path.size()-1)) {
+					int relationId = relations.get(path.get(i)+" "+path.get(i+1)).id();
+					
+					algInfo.addLine("		ID: " + relationId +
+									" | " + path.get(i) + " --> " + path.get(i+1) + " | " +
+									"Relacja : " + getRelationById(relationId));
 				}
 			}
 			tx.success();
 			tx.close();
-		}catch (NullPointerException e){
+		}catch (NullPointerException exc){
 			algInfo.addLine("Brak œcie¿ki");
 		}
-    }
-
-    public Record getGraphSize(){
-        try ( Session session = neo4jdriver.session() ) {
-            return session.readTransaction(AStarThread::getSize);
-        }
     }
     
     public List<Record> getNodeById(int nodeId){
@@ -208,50 +203,37 @@ public class AStarThread implements Runnable{
  	    }
     }
     
-    public Map<String, Object> getNodeData(String nodeId) {
-    	try ( Session session = neo4jdriver.session() ) {
-  	       Transaction tx = session.beginTransaction();
-  	       return getNodeData(tx, nodeId);
-  	    }
-    }
-    
-    public Map<String, Object> getRelationData(int relationId) {
+    public Map<String, Object> getRelationById(int relationId) {
     	try ( Session session = neo4jdriver.session() ) {
    	       Transaction tx = session.beginTransaction();
-   	       return getRelationData(tx, relationId);
+   	       return getRelation(tx, relationId);
    	    }
     }
 
     public List<Record> getNodesList(){
     	try ( Session session = neo4jdriver.session() ) {
  	       Transaction tx = session.beginTransaction();
- 	       return getNodes(tx, StartId, EndId);
+ 	       return getNodes(tx, startNodeId, endNodeId);
  	    }
     }
 
     public List<Record> getRelationsList(){
     	try ( Session session = neo4jdriver.session() ) {
   	       Transaction tx = session.beginTransaction();
-  	       return getRelations(tx, StartId, distanceKey);
+  	       return getRelations(tx, startNodeId, distanceKey);
   	    }
     }
     
     private static List<Record> getNode(Transaction tx, int nodeId) {
-    	return tx.run("MATCH (node) " +
-    			"WHERE ID(node)=" + nodeId + " " +
-    			"RETURN node").list();
+    	return tx.run(	"MATCH (n) " +
+    					"WHERE ID(n)=" + nodeId + " " +
+    					"RETURN n").list();
     }
     
-    private static Map<String, Object> getNodeData(Transaction tx, String nodeId) {
-    	return tx.run("MATCH (n) " +
-    			"WHERE ID(n)=" + nodeId + " " +
-    			"RETURN n").single().get(0).asMap();
-    }
-    
-    private static Map<String, Object> getRelationData(Transaction tx, int relationId) {
-    	return tx.run("MATCH ()-[r]->() " +
-    			"WHERE ID(r)=" + relationId + " " +
-    			"RETURN r").single().get(0).asMap();
+    private static Map<String, Object> getRelation(Transaction tx, int relationId) {
+    	return tx.run(	"MATCH ()-[r]->() " +
+    					"WHERE ID(r)=" + relationId + " " +
+    					"RETURN r").single().get(0).asMap();
     }
     
     private static List<Record> getRelations(Transaction tx, int StartId, String distanceKey)
@@ -294,7 +276,6 @@ public class AStarThread implements Runnable{
             matchExpand += "(p" + index + ")-[r" + index + "]->(n)-[r]->(p)";
             index++;
         }
-
         return finalResult;
     }
 
@@ -315,7 +296,6 @@ public class AStarThread implements Runnable{
             for (Record aResult1 : result) {
                 if (!finalResult.contains(aResult1)) {
                     finalResult.add(aResult1);
-
                 }
             }
             index++;
@@ -323,9 +303,5 @@ public class AStarThread implements Runnable{
             matchExpand += "-[]->(a" + index + ")" + "-[]->(n)";
         }
         return finalResult;
-    }
-
-    private static Record getSize(Transaction tx){
-        return tx.run("start n=node(*) match (n) return count(n)").list().get(0);
     }
 }

@@ -7,21 +7,17 @@ import application.model.Node;
 
 public class NodeGC extends Node{
 	
-	private List<Integer> Neighbors;
+	private List<Integer> neighbors;
 	private int color;
 	
 	public NodeGC(int id) {
 		super(id);
-		this.Neighbors = new ArrayList<Integer>();
+		this.neighbors = new ArrayList<Integer>();
 		this.color = 0;
 	}
 	
 	public List<Integer> neighbors() {
-		return Neighbors;
-	}
-	
-	public void setNeighbors(List<Integer> Neighbors) {
-		this.Neighbors = Neighbors;
+		return neighbors;
 	}
 
 	public int color() {

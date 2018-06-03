@@ -6,18 +6,18 @@ import application.model.Node;
 
 public class NodeAStar extends Node{
 
-    private final HashMap<Integer, Double> Heuristic;
+    private final HashMap<Integer, Double> heuristic;
 
     private double g;  // g = distance from the source
     private double f;  // f = g + h 
 
-    public NodeAStar(int id, HashMap<Integer, Double> Heuristic) {
+    public NodeAStar(int id, HashMap<Integer, Double> heuristic) {
         super(id);
         this.g = Double.MAX_VALUE;
-        this.Heuristic = Heuristic;
+        this.heuristic = heuristic;
     }
 
-    public double G() {
+    public double g() {
         return g;
     }
 
@@ -26,11 +26,11 @@ public class NodeAStar extends Node{
     }
 
     public void calcF(int destination) {
-        double h = Heuristic.get(destination);
+        double h = heuristic.get(destination);
         this.f = g + h;
     }
 
-    public double F() {
+    public double f() {
         return f;
     }
 }

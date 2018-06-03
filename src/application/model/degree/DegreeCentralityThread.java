@@ -13,24 +13,31 @@ import application.model.FileCreator;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 
-public class DegreeCentrality implements Runnable{
+public class DegreeCentralityThread implements Runnable{
 
 	private boolean isIndegree;
 	private boolean isOutdegree;
 	private boolean isBoth;
-	private Driver neo4jdriver;
+	private Driver neo4jDriver;
 	
-	private ArrayList<NodeDegree> Nodes;
-	private ArrayList<String> SaveParameters;
+	private ArrayList<NodeDegree> nodes;
+	private ArrayList<String> saveParameters;
 	
 	private ProgressBar progress;
 	private TextField progressPrompt;
 	
 	private double nodesCount;
-	private int count;
+	private int computedCount;
 	
-	public DegreeCentrality(Driver neo4jdriver, boolean isIndegree, boolean isOutdegree, boolean isBoth, ProgressBar progress, TextField progressPrompt) {
-		this.neo4jdriver = neo4jdriver;
+	public DegreeCentralityThread(
+			Driver neo4jDriver,
+			boolean isIndegree, 
+			boolean isOutdegree, 
+			boolean isBoth, 
+			ProgressBar progress, 
+			TextField progressPrompt) 
+	{
+		this.neo4jDriver = neo4jDriver;
 		this.isIndegree = isIndegree;
 		this.isOutdegree = isOutdegree;
 		this.isBoth = isBoth;
@@ -38,8 +45,8 @@ public class DegreeCentrality implements Runnable{
 		this.progressPrompt = progressPrompt;
 		this.nodesCount = getNodesCount();
 		
-		Nodes = new ArrayList<NodeDegree>();
-		SaveParameters = new ArrayList<String>();
+		nodes = new ArrayList<NodeDegree>();
+		saveParameters = new ArrayList<String>();
 	}
 	
 	@Override
@@ -47,19 +54,19 @@ public class DegreeCentrality implements Runnable{
 		progressPrompt.setText("Wykonywana operacja: POBIERANIE GRAFU");
 		for(Record record : getNodesList()) {
 			NodeDegree node = new NodeDegree(record.get(0).asInt());
-			Nodes.add(node);
-			progress.setProgress((Nodes.size()/nodesCount)/5);
+			nodes.add(node);
+			progress.setProgress((nodes.size()/nodesCount)/5);
 		}
 		
 		progressPrompt.setText("Wykonywana operacja: OBLICZANIE");
 		Runnable indegree = () -> {
-			for(NodeDegree node : Nodes) {
+			for(NodeDegree node : nodes) {
 				node.setIndegree(getRelationsInCount(node.id()));
-				progress.setProgress(0.2 + (count++/nodesCount)/2.5);
+				progress.setProgress(0.2 + (computedCount++/nodesCount)/2.5);
 			}
 		};	
 		Runnable outdegree = () -> {
-			for(NodeDegree node : Nodes) {
+			for(NodeDegree node : nodes) {
 				node.setOutdegree(getRelationsOutCount(node.id()));
 			}
 		};
@@ -70,42 +77,42 @@ public class DegreeCentrality implements Runnable{
 		try {
 			inThread.join();
 			outThread.join();
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
+		} catch (InterruptedException exc) {
+			exc.printStackTrace();
 		}		
 		
 		if(isIndegree)
-			SaveParameters.add("Indegree");			
+			saveParameters.add("Indegree");			
 		
 		if(isOutdegree)
-			SaveParameters.add("Outdegree");		
+			saveParameters.add("Outdegree");		
 
 		if(isBoth)
-			SaveParameters.add("Degree");
+			saveParameters.add("Degree");
 		
 		progressPrompt.setText("Wykonywana operacja: ZAPISYWANIE WYNIKÓW");
-		count = 0;
-		Transaction transaction = neo4jdriver.session().beginTransaction();
-		for(NodeDegree node : Nodes) {
+		computedCount = 0;
+		Transaction tx = neo4jDriver.session().beginTransaction();
+		for(NodeDegree node : nodes) {
 			Runnable save = () -> {
-				for(String saveParameter : SaveParameters) {
-					insertNodeCentrality(transaction, node, saveParameter);
+				for(String saveParameter : saveParameters) {
+					insertNodeCentrality(tx, node, saveParameter);
 				}
 			};	
-			progress.setProgress(0.6 + (count++/nodesCount)/2.5);
+			progress.setProgress(0.6 + (computedCount++/nodesCount)/2.5);
 			Thread saveThread = new Thread(save);
 			saveThread.start();	
 			try {
 				saveThread.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			} catch (InterruptedException exc) {
+				exc.printStackTrace();
 			}
 		}
 		progress.setProgress(1);
 		progressPrompt.setText("Wykonywana operacja: FINALIZOWANIE TRANSAKCJI");
 		
-		transaction.success();
-		transaction.close();
+		tx.success();
+		tx.close();
 	}
 	
 	public void algExecToFile(FileCreator algInfo) {
@@ -115,16 +122,16 @@ public class DegreeCentrality implements Runnable{
     	algInfo.addEmptyLine();
     	
     	algInfo.addLine("Obliczane parametry :");
-    	for(int i = 1; i <= SaveParameters.size() ; i++) {
-    		algInfo.addLine("	" + i + ". " + SaveParameters.get(i-1));
+    	for(int i = 1; i <= saveParameters.size() ; i++) {
+    		algInfo.addLine("	" + i + ". " + saveParameters.get(i-1));
     	}
     	algInfo.addEmptyLine();
-    	for(int i = 0; i < SaveParameters.size() ; i++) {
+    	for(int i = 0; i < saveParameters.size() ; i++) {
     		int maxDegree = 0;
     		int minDegree = Integer.MAX_VALUE;
     		
-    		for(NodeDegree node : Nodes) {
-    			if(SaveParameters.get(i).equals("Indegree")) {
+    		for(NodeDegree node : nodes) {
+    			if(saveParameters.get(i).equals("Indegree")) {
     				if(node.indegree() > maxDegree) {
     					maxDegree = node.indegree();
     				}
@@ -132,7 +139,7 @@ public class DegreeCentrality implements Runnable{
     					minDegree = node.indegree();
     				}
     			}
-    			if(SaveParameters.get(i).equals("Outdegree")) {
+    			if(saveParameters.get(i).equals("Outdegree")) {
     				if(node.outdegree() > maxDegree) {
     					maxDegree = node.indegree();
     				}
@@ -140,7 +147,7 @@ public class DegreeCentrality implements Runnable{
     					minDegree = node.indegree();
     				}
     			}
-    			if(SaveParameters.get(i).equals("Degree")) {
+    			if(saveParameters.get(i).equals("Degree")) {
     				if(node.indegree() + node.outdegree() > maxDegree) {
     					maxDegree = node.indegree();
     				}
@@ -150,15 +157,15 @@ public class DegreeCentrality implements Runnable{
     			}
     		}
     		
-    		algInfo.addLine("Parametr : " + SaveParameters.get(i));
+    		algInfo.addLine("Parametr : " + saveParameters.get(i));
     		algInfo.addEmptyLine();
     		algInfo.addLine("Maksymalna wartoœæ = " + maxDegree);
-			for(Record record : getNodesByDegree(maxDegree,SaveParameters.get(i))) {
+			for(Record record : getNodesByDegree(maxDegree,saveParameters.get(i))) {
 				algInfo.addLine("ID: " + record.get(0).asInt() + "	Wierzcho³ek : " + record.get(1).asMap());
 			}	
 			algInfo.addEmptyLine();
 			algInfo.addLine("Minimalna wartoœæ  = " + minDegree);
-			for(Record record : getNodesByDegree(minDegree,SaveParameters.get(i))) {
+			for(Record record : getNodesByDegree(minDegree,saveParameters.get(i))) {
 				algInfo.addLine("ID: " + record.get(0).asInt() +"	Wierzcho³ek : " + record.get(1).asMap());
 			}
 			algInfo.addEmptyLine();
@@ -167,39 +174,39 @@ public class DegreeCentrality implements Runnable{
     }
 	
 	private double getNodesCount(){
-        try ( Session session = neo4jdriver.session() ) {
-            return session.readTransaction(DegreeCentrality::getNodesNum).get(0).asDouble();
+        try ( Session session = neo4jDriver.session() ) {
+            return session.readTransaction(DegreeCentralityThread::getNodesNum).get(0).asDouble();
         }
     }
 	
 	private int getRelationsCount(){
-        try ( Session session = neo4jdriver.session() ) {
-            return session.readTransaction(DegreeCentrality::getRelationsNum).get(0).asInt();
+        try ( Session session = neo4jDriver.session() ) {
+            return session.readTransaction(DegreeCentralityThread::getRelationsNum).get(0).asInt();
         }
     }
 	
 	private List<Record> getNodesList(){
-		try ( Session session = neo4jdriver.session() ) {
-			return session.readTransaction(DegreeCentrality::getNodes);
+		try ( Session session = neo4jDriver.session() ) {
+			return session.readTransaction(DegreeCentralityThread::getNodes);
 	    }
 	}
 
 	private int getRelationsOutCount(long node){
-		try ( Session session = neo4jdriver.session() ) {
+		try ( Session session = neo4jDriver.session() ) {
 	       Transaction tx = session.beginTransaction();
 	       return Integer.parseInt(getRelationsOut(tx,node).get(0).toString());
 	    }
 	}
 	
 	private int getRelationsInCount(long node){
-		try ( Session session = neo4jdriver.session() ) {
+		try ( Session session = neo4jDriver.session() ) {
 	       Transaction tx = session.beginTransaction();
 	       return Integer.parseInt(getRelationsIn(tx,node).get(0).toString());
 	    }
 	}
 	
 	private List<Record> getNodesByDegree(int degree, String parameter) {
-    	try ( Session session = neo4jdriver.session() ) {
+    	try ( Session session = neo4jDriver.session() ) {
     		Transaction tx = session.beginTransaction();
     		List<Record> records;
     		records = getNodesByDegree(tx, degree, parameter);
@@ -210,38 +217,50 @@ public class DegreeCentrality implements Runnable{
     }
 	
 	private static Record getNodesNum(Transaction tx){
-        return tx.run("MATCH (n) RETURN COUNT(n)").list().get(0);
+        return tx.run(	"MATCH (n) " +
+        				"RETURN COUNT(n)").list().get(0);
     }
 	
 	private static Record getRelationsNum(Transaction tx){
-        return tx.run("MATCH ()-[r]->() RETURN COUNT(r)").list().get(0);
+        return tx.run(	"MATCH ()-[r]->() " +
+        				"RETURN COUNT(r)").list().get(0);
     }
 		
 	private static Record getRelationsOut(Transaction tx, long node){
-		return tx.run("MATCH (n)-[r]->(p) where ID(n)=" + node + " RETURN count(p)").list().get(0);
+		return tx.run(	"MATCH (n)-[r]->(p) " +
+						"WHERE ID(n)=" + node + " " +
+						"RETURN count(p)").list().get(0);
 	}
 	    
 	private static Record getRelationsIn(Transaction tx, long node){
-		return tx.run("MATCH (p)-[r]->(n) where ID(n)=" + node + " RETURN count(p)").list().get(0);
+		return tx.run(	"MATCH (p)-[r]->(n) " +
+						"WHERE ID(n)=" + node + " " +
+						"RETURN count(p)").list().get(0);
 	}
 
 	private static List<Record> getNodes(Transaction tx){
-		return tx.run("MATCH (n) RETURN ID(n)").list();
+		return tx.run(	"MATCH (n) " +
+						"RETURN ID(n)").list();
 	}
 	
 	private StatementResult insertNodeCentrality(Transaction tx, NodeDegree node, String saveParameter) {
+		String query = "MATCH (n) " +
+				"WHERE ID(n) = " + node.id() + " " +
+				"SET n." + saveParameter + " = ";
 		if(saveParameter.equals("Indegree"))
-			return tx.run("MATCH (n) WHERE ID(n) = " + node.id() + " SET n." + saveParameter + " = " + node.indegree());
+			return tx.run(query	+ node.indegree());
 		if(saveParameter.equals("Outdegree"))
-			return tx.run("MATCH (n) WHERE ID(n) = " + node.id() + " SET n." + saveParameter + " = " + node.outdegree());
+			return tx.run(query + node.outdegree());
 		if(saveParameter.equals("Degree")) {
 			int degree = node.indegree() + node.outdegree();
-			return tx.run("MATCH (n) WHERE ID(n) = " + node.id() + " SET n." + saveParameter + " = " + degree);
+			return tx.run(query + degree);
 		}
 		return null;
     }
 	
 	private static List<Record> getNodesByDegree(Transaction tx, int degree, String parameter) {
-   	 return tx.run("MATCH (n) WHERE n." + parameter + "=" + degree + " RETURN ID(n),n").list();
+   	 	return tx.run(	"MATCH (n) " +
+   	 					"WHERE n." + parameter + "=" + degree + " " +
+   	 					"RETURN ID(n),n").list();
    }
 }

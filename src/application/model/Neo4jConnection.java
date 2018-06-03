@@ -23,57 +23,56 @@ import javafx.stage.StageStyle;
 
 public class Neo4jConnection implements Runnable{
 	
-	private GraphDatabaseService graphDb;
-	private Driver driver;
+	private GraphDatabaseService graphDBService;
+	private Driver neo4jDriver;
 
-	private String port;
+	private String portNumber;
 	
-	private File DBpath;
-	private File DatabaseCheck;
+	private File pathToDB;
+	private File databaseCheck;
 	
 	private Boolean isConnected = false;
-	private Boolean ConnectionErr = false;
+	private Boolean connectionErr = false;
 	
-	public void initPath(String path) {
-		DBpath = new File(path);
-		DatabaseCheck = new File(DBpath + File.separator + "neostore.schemastore.db");
+	public void initPath(String pathToDB) {
+		this.pathToDB = new File(pathToDB);
+		this.databaseCheck = new File(pathToDB + File.separator + "neostore.schemastore.db");
 	}
 	
 	public Path pathToDB() {
-		return DBpath.toPath();
+		return pathToDB.toPath();
 	}
 	
-	public void initNewPath(String path) {
-		DatabaseCheck = new File(path);
-		DBpath = new File(path);
+	public void initNewPath(String pathToDB) {
+		this.databaseCheck = new File(pathToDB);
+		this.pathToDB = new File(pathToDB);
 	}
 	
-	public void initPortNumber(String port) {	
-		if(port.isEmpty())
-			this.port = ":7690";
+	public void initPortNumber(String portNumber) {	
+		if(portNumber.isEmpty())
+			this.portNumber = ":7690";
 		else
-			this.port = ":" + port;	
+			this.portNumber = ":" + portNumber;	
 	}
 	
 	@SuppressWarnings("deprecation")
 	public void startConnection() throws IOException{
-		if(DatabaseCheck.exists() && DBpath.exists()) {
-							
+		if(databaseCheck.exists() && pathToDB.exists()) {						
 			GraphDatabaseSettings.BoltConnector bolt = GraphDatabaseSettings.boltConnector("0");
 
 			try{
-				graphDb = new GraphDatabaseFactory()
-						.newEmbeddedDatabaseBuilder(DBpath)
+				graphDBService = new GraphDatabaseFactory()
+						.newEmbeddedDatabaseBuilder(pathToDB)
 						.setConfig(bolt.type, "BOLT")
 						.setConfig(bolt.enabled, "true")
-						.setConfig(bolt.address, port)
+						.setConfig(bolt.address, portNumber)
 						.newGraphDatabase();
 						
-				registerShutdownHook(graphDb);
+				registerShutdownHook(graphDBService);
 									
-				driver = GraphDatabase.driver("bolt://127.0.0.1" + port);
+				neo4jDriver = GraphDatabase.driver("bolt://127.0.0.1" + portNumber);
 				
-				try ( Session session = driver.session() ) {
+				try ( Session session = neo4jDriver.session() ) {
 					Transaction tx = session.beginTransaction();
 		            tx.run("MATCH (n) RETURN n LIMIT 10");
 		            tx.success();
@@ -82,7 +81,7 @@ public class Neo4jConnection implements Runnable{
 
 				isConnected = true;
 			}catch(Exception e) {
-				ConnectionErr = true;
+				connectionErr = true;
 				Platform.runLater(new Runnable(){
 					@Override
 					public void run() {
@@ -91,14 +90,14 @@ public class Neo4jConnection implements Runnable{
 						alert.setHeaderText(null);
 						alert.setContentText(
 							"Nie mo¿na nawi¹zaæ po³¹czenia z baz¹, nale¿y zakoñczyæ wszystkie inne po³¹czenia z baz¹, " +
-							"lub zwolniæ port " + port.replaceAll(":", ""));
+							"lub zwolniæ port " + portNumber.replaceAll(":", ""));
 						alert.showAndWait();
 					}
 				});
 			}	
 		}
-		if(!DBpath.exists()) {
-			ConnectionErr = true;
+		if(!pathToDB.exists()) {
+			connectionErr = true;
 			Platform.runLater(new Runnable(){
 				@Override
 				public void run() {
@@ -110,21 +109,21 @@ public class Neo4jConnection implements Runnable{
 				}
 			});
 		}
-		if(!DatabaseCheck.exists() && DBpath.exists()){
+		if(!databaseCheck.exists() && pathToDB.exists()){
 			Platform.runLater(new Runnable(){
 				@Override
 				public void run() {
 					try {
-						final FXMLLoader fxmlLoader = new FXMLLoader();
-					    fxmlLoader.setLocation(getClass().getResource("/application/view/NewDatabase.fxml"));
+						final FXMLLoader loader = new FXMLLoader();
+					    loader.setLocation(getClass().getResource("/application/view/NewDatabase.fxml"));
 			        
-					    Scene QuestionScene = new Scene(fxmlLoader.load(), 300, 150);
-					    Stage QuestionStage = new Stage();
+					    Scene newDBScene = new Scene(loader.load(), 300, 150);
+					    Stage newDBStage = new Stage();
 					    
-					    QuestionScene.getStylesheets().add("/application/resource/Custom.css");
-					    QuestionStage.initStyle(StageStyle.TRANSPARENT);
-					    QuestionStage.setScene(QuestionScene);
-					    QuestionStage.show();					 
+					    newDBScene.getStylesheets().add("/application/resource/Custom.css");
+					    newDBStage.initStyle(StageStyle.TRANSPARENT);
+					    newDBStage.setScene(newDBScene);
+					    newDBStage.show();					 
 					} catch (IOException e) {
 				        Logger logger = Logger.getLogger(getClass().getName());
 				        logger.log(Level.SEVERE, "Failed to create new Window.", e);
@@ -135,20 +134,18 @@ public class Neo4jConnection implements Runnable{
 	}
 	
 	public void shutdownConnection() throws Exception {
-		graphDb.shutdown();
-		graphDb = null;
-		driver.close();
+		graphDBService.shutdown();
+		graphDBService = null;
+		neo4jDriver.close();
 		isConnected = false;
 	}
 	
 	public void run(){	
 		try {
-			if(!isConnected()) {
+			if(!isConnected())
 				startConnection();
-			}
-			else if(isConnected()) {
+			else if(isConnected())
 				shutdownConnection();
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}		
@@ -159,22 +156,22 @@ public class Neo4jConnection implements Runnable{
 	}
 	
 	public boolean isConnectionErr() {
-		return ConnectionErr;
+		return connectionErr;
 	}
 	
 	public void setConnectionErr(boolean ConnectionErr) {
-		this.ConnectionErr = ConnectionErr;
+		this.connectionErr = ConnectionErr;
 	}
 	
 	public Driver driver() {
-		return driver;
+		return neo4jDriver;
 	}
 	
-	public GraphDatabaseService graphDb() {
-		return graphDb;
+	public GraphDatabaseService graphDBService() {
+		return graphDBService;
 	}
 	
-	private static void registerShutdownHook( final GraphDatabaseService graphDb ){
-	    Runtime.getRuntime().addShutdownHook(new Thread(graphDb::shutdown));
+	private static void registerShutdownHook( final GraphDatabaseService graphDBService ){
+	    Runtime.getRuntime().addShutdownHook(new Thread(graphDBService::shutdown));
 	}
 }

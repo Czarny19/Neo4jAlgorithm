@@ -20,33 +20,34 @@ import javafx.stage.Stage;
 public class NewDatabaseController implements Initializable{
 	
 	@FXML
-	private Pane NewDBQuestion;
+	private Pane newDatabasePane;
 	@FXML
-	private TextArea InfoBox;
+	private TextArea newDatabasePrompt;
 	
 	private static int answer;
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		NewDBQuestion.setBorder(new Border(new BorderStroke(
+		newDatabasePane.setBorder(new Border(new BorderStroke(
 				Color.BLACK, 
 	            BorderStrokeStyle.SOLID, 
 	            CornerRadii.EMPTY, 
 	            BorderWidths.DEFAULT)));
 		
-		InfoBox.setEditable(false);
-		InfoBox.setFocusTraversable(false);		
+		newDatabasePrompt.setFocusTraversable(false);	
+		newDatabasePrompt.setEditable(false);
+			
 		answer = 0;
 	}
 	
 	@FXML
-	private void yesButtonAction(ActionEvent event) {
+	private void yes(ActionEvent event) {
 		buttonAction(event);
 		answer = 1;
 	}
 	
 	@FXML
-	private void noButtonAction(ActionEvent event) {
+	private void no(ActionEvent event) {
 		buttonAction(event);
 	    answer = 2;
 	}
@@ -64,5 +65,4 @@ public class NewDatabaseController implements Initializable{
 	void resetAnswer() {
 		answer = 0;
 	}
-
 }
