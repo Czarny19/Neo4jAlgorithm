@@ -35,7 +35,7 @@ public class Neo4jConnection implements Runnable{
 	private Boolean connectionErr = false;
 	
 	public void initPath(String pathToDB) {
-		this.pathToDB = new File(pathToDB);
+		this.pathToDB = new File(pathToDB.replace("\\", File.separator));
 		this.databaseCheck = new File(pathToDB + File.separator + "neostore.schemastore.db");
 	}
 	
@@ -58,8 +58,7 @@ public class Neo4jConnection implements Runnable{
 	@SuppressWarnings("deprecation")
 	public void startConnection() throws IOException{
 		if(databaseCheck.exists() && pathToDB.exists()) {						
-			GraphDatabaseSettings.BoltConnector bolt = GraphDatabaseSettings.boltConnector("0");
-
+			GraphDatabaseSettings.BoltConnector bolt = GraphDatabaseSettings.boltConnector("0");		
 			try{
 				graphDBService = new GraphDatabaseFactory()
 						.newEmbeddedDatabaseBuilder(pathToDB)
@@ -81,6 +80,7 @@ public class Neo4jConnection implements Runnable{
 
 				isConnected = true;
 			}catch(Exception e) {
+				e.printStackTrace();
 				connectionErr = true;
 				Platform.runLater(new Runnable(){
 					@Override
@@ -115,12 +115,12 @@ public class Neo4jConnection implements Runnable{
 				public void run() {
 					try {
 						final FXMLLoader loader = new FXMLLoader();
-					    loader.setLocation(getClass().getResource("/application/view/NewDatabase.fxml"));
+					    loader.setLocation(getClass().getResource("/src/application/view/NewDatabase.fxml"));
 			        
 					    Scene newDBScene = new Scene(loader.load(), 300, 150);
 					    Stage newDBStage = new Stage();
 					    
-					    newDBScene.getStylesheets().add("/application/resource/Custom.css");
+					    newDBScene.getStylesheets().add("/src/application/resource/Custom.css");
 					    newDBStage.initStyle(StageStyle.TRANSPARENT);
 					    newDBStage.setScene(newDBScene);
 					    newDBStage.show();					 

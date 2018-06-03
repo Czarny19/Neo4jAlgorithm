@@ -29,14 +29,14 @@ public class Main extends Application {
         loadingScene.getStylesheets().add("/application/resource/Custom.css");
                    
         loading = new Stage();
-        loading.getIcons().add(new Image("application/resource/Icon.png"));
+        loading.getIcons().add(new Image("/application/resource/Icon.png"));
         loading.initStyle(StageStyle.TRANSPARENT);
         loading.setScene(loadingScene);         
         loading.show();
     	
     	root = menuLoder.load();
     	
-    	mainStage.getIcons().add(new Image("application/resource/Icon.png"));
+    	mainStage.getIcons().add(new Image("/application/resource/Icon.png"));
     	mainStage.setTitle("Neo4j Algorithm");    	
     	mainStage.setScene(new Scene(root));
     	mainStage.initStyle(StageStyle.UNIFIED);
