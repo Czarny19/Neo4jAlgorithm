@@ -47,11 +47,6 @@
 	    <version>3.3.0-rc1</version>
 	</dependency>
 	<dependency>
-	    <groupId>org.neo4j.app</groupId>
-	    <artifactId>neo4j-server</artifactId>
-	    <version>LATEST</version>
-	</dependency>
-	<dependency>
 		<groupId>org.neo4j</groupId>
 		<artifactId>neo4j-kernel</artifactId>
 		<version>3.3.0-rc1</version>

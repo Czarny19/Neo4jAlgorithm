@@ -15,28 +15,53 @@ import javafx.util.Duration;
 public class Main extends Application {
 	
 	private Stage loading;
+	private final boolean isDeploy = false;
+	// application.resorce.LoadingScreen.fxml
+	// ImageView
+	// Deploy
+	// Image url = /src/application/resource/WAT-logo.jpg
+	// Dev
+	// Image url = @../resource/WAT-logo.jpg
 
     @Override
     public void start(Stage mainStage) throws Exception {
+    	String menuPath;
+    	String loadingPath;
+    	String cssPath;
+    	String iconPath;
+    	
+    	if(isDeploy) {
+    		menuPath = "/src/application/view/Menu.fxml";
+    		loadingPath = "/src/application/view/LoadingScreen.fxml";
+    		cssPath = "/src/application/resource/Custom.css";
+    		iconPath = "/src/application/resource/Icon.png";
+    	}
+    	else {
+    		menuPath = "view/Menu.fxml";
+    		loadingPath = "view/LoadingScreen.fxml";
+    		cssPath = "application/resource/Custom.css";
+    		iconPath = "application/resource/Icon.png";
+    	}
+    	
     	final PauseTransition delay = new PauseTransition(Duration.seconds(1));	
     	
-        final FXMLLoader loadingScreenLoader = new FXMLLoader(getClass().getResource("view/LoadingScreen.fxml"));
-        final FXMLLoader menuLoder = new FXMLLoader(getClass().getResource("view/Menu.fxml"));
+        final FXMLLoader loadingScreenLoader = new FXMLLoader(getClass().getResource(loadingPath));
+        final FXMLLoader menuLoder = new FXMLLoader(getClass().getResource(menuPath));
 
         Parent root = loadingScreenLoader.load();
         Scene loadingScene = new Scene(root);
         
-        loadingScene.getStylesheets().add("/application/resource/Custom.css");
+        loadingScene.getStylesheets().add(cssPath);
                    
         loading = new Stage();
-        loading.getIcons().add(new Image("/application/resource/Icon.png"));
+        loading.getIcons().add(new Image(iconPath));
         loading.initStyle(StageStyle.TRANSPARENT);
         loading.setScene(loadingScene);         
         loading.show();
     	
     	root = menuLoder.load();
     	
-    	mainStage.getIcons().add(new Image("/application/resource/Icon.png"));
+    	mainStage.getIcons().add(new Image(iconPath));
     	mainStage.setTitle("Neo4j Algorithm");    	
     	mainStage.setScene(new Scene(root));
     	mainStage.initStyle(StageStyle.UNIFIED);

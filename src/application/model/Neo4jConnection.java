@@ -142,10 +142,12 @@ public class Neo4jConnection implements Runnable{
 	
 	public void run(){	
 		try {
-			if(!isConnected())
+			if(!isConnected()) {
 				startConnection();
-			else if(isConnected())
+			}
+			else if(isConnected()) {
 				shutdownConnection();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}		
