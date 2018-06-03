@@ -29,22 +29,22 @@
 	<dependency>
 	    <groupId>org.neo4j.driver</groupId>
 	    <artifactId>neo4j-java-driver</artifactId>
-	    <version>LATEST</version>
+	    <version>1.5.0-alpha03</version>
 	</dependency>
 	<dependency>
 	    <groupId>org.neo4j</groupId>
 	    <artifactId>neo4j</artifactId>
-	    <version>LATEST</version>
+	    <version>3.3.0-rc1</version>
 	</dependency>
 	<dependency>
 		<groupId>org.neo4j</groupId>
 		<artifactId>neo4j-bolt</artifactId>
-		<version>LATEST</version>
+		<version>3.3.0-rc1</version>
 	</dependency>
 	<dependency>
 	    <groupId>org.neo4j.app</groupId>
 	    <artifactId>neo4j-server</artifactId>
-	    <version>LATEST</version>
+	    <version>3.3.0-rc1</version>
 	</dependency>
 	<dependency>
 	    <groupId>org.neo4j.app</groupId>
@@ -54,7 +54,7 @@
 	<dependency>
 		<groupId>org.neo4j</groupId>
 		<artifactId>neo4j-kernel</artifactId>
-		<version>LATEST</version>
+		<version>3.3.0-rc1</version>
 	</dependency>
   </dependencies>
 </project>
